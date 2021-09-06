@@ -1,6 +1,7 @@
 package com.db.edu.service;
 
 import com.db.edu.dao.Discussion;
+import com.db.edu.storage.BufferStorage;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -10,26 +11,8 @@ import java.util.stream.Collectors;
 import static com.db.edu.storage.DiscussionStorage.getDiscussionById;
 
 public class Service {
-    private BufferedWriter writer;
-    private BufferedReader reader;
-
-    public Service(String path) {
-        try {
-            writer = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new BufferedOutputStream(
-                                    new FileOutputStream(path))));
-            reader = new BufferedReader(
-                    new InputStreamReader(
-                            new BufferedInputStream(
-                                    new FileInputStream(path)))))
-
-        } catch (FileNotFoundException ex) {
-            throw new RuntimeException("File not found", ex);
-        }
-    }
-
     public void saveAndSendMessage(String message, int discussionId) {
+        BufferedWriter writer = getWriter(getFileName(discussionId));
         LocalDateTime dateTime = LocalDateTime.now();
         String formattedMessage = dateTime + ": " + message;
         try {
@@ -44,7 +27,44 @@ public class Service {
     }
 
     public List<String> getMessagesFromDiscussion(int discussionId) {
+        BufferedReader reader = getReader(getFileName(discussionId));
         Discussion discussion = getDiscussionById(discussionId);
         return reader.lines().collect(Collectors.toList());
+    }
+
+    private String getFileName(int discussionId) {
+        return "discussion" + discussionId + ".txt";
+    }
+
+    private BufferedWriter getWriter(String fileName) {
+        BufferedWriter writer = BufferStorage.getBufferedWriterByFileName(fileName);
+        if (writer == null) {
+            try {
+                writer = new BufferedWriter(
+                        new OutputStreamWriter(
+                                new BufferedOutputStream(
+                                        new FileOutputStream(fileName))));
+                BufferStorage.save(fileName, writer);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("File not found", e);
+            }
+        }
+        return writer;
+    }
+
+    private BufferedReader getReader(String fileName) {
+        BufferedReader reader = BufferStorage.getBufferedReaderByFileName(fileName);
+        if (reader == null) {
+            try {
+                reader = new BufferedReader(
+                        new InputStreamReader(
+                                new BufferedInputStream(
+                                        new FileInputStream(fileName))));
+                BufferStorage.save(fileName, reader);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("File not found", e);
+            }
+        }
+        return reader;
     }
 }
