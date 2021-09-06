@@ -1,18 +1,13 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.UserNotIdentifiedException;
-import com.db.edu.server.dao.User;
+import com.db.edu.server.model.User;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +28,7 @@ public class ServiceTest {
 
         User userStub = mock(User.class);
 
-        assertThrows(RuntimeException.class, () -> sutService.saveAndSendMessage(tooLongMessage, 228, userStub));
+        assertThrows(RuntimeException.class, () -> sutService.saveAndSendMessage(tooLongMessage, userStub));
     }
 
     @Test
@@ -42,7 +37,7 @@ public class ServiceTest {
 
         User userStub = mock(User.class);
 
-        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", 228, userStub));
+        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
     }
 
     @Test
@@ -52,7 +47,7 @@ public class ServiceTest {
         User userStub = mock(User.class);
         when(userStub.getNickname()).thenReturn(null);
 
-        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", 228, userStub));
+        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
     }
 
     @Test
@@ -75,27 +70,29 @@ public class ServiceTest {
         sutService.checkUserIdentified(userStub);
     }
 
-    @Test
-    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() {
-        Service sutService = new Service();
-        User user = new User(10);
-
-        sutService.setUserNickname("Musk", user);
-
-        assertEquals("Musk", user.getNickname());
-    }
+//    @Test
+//    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() {
+//        Service sutService = new Service();
+//        User user = new User(10);
+//
+//        sutService.setUserNickname("Musk", user);
+//
+//        assertEquals("Musk", user.getNickname());
+//    }
 
     @Test
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
         Service sutService = new Service();
 
-        assertEquals("discussion228.txt", sutService.getFileName(228));
+        assertEquals("src/main/resources/room228.txt", sutService.getFileName(228));
     }
 
     @Test
     public void serviceShouldFormatMessageCorrectlyWhenGetsMessageAndNickname() {
         Service sutService = new Service();
 
-        assertEquals("Musk: Hello Mars!" + " (" + LocalDateTime.now() + ")", sutService.formatMessage("Musk", "Hello Mars!"));
+        assertEquals("Musk: Hello Mars!" + " ("
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")",
+                sutService.formatMessage("Musk", "Hello Mars!"));
     }
 }
