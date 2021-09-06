@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.nio.file.Files.readString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -80,6 +79,7 @@ public class ServiceTest {
         User user = new User(10);
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
 
+        when(clientWorkerStub.getUser()).thenReturn(user);
         UsersController.addUserConnection(10, clientWorkerStub);
         sutService.setUserNickname("Musk", user);
 
