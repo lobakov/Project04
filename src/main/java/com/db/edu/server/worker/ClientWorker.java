@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ClientWorker extends Thread {
     private Socket socket;
@@ -28,8 +29,8 @@ public class ClientWorker extends Thread {
         this.running = true;
         this.discussionId = 1;
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
@@ -41,6 +42,8 @@ public class ClientWorker extends Thread {
         while (running) {
             try {
                 processCommand(in.readLine());
+            } catch (SocketException e) {
+                stopRunning();
             } catch (IOException e) {
                 e.printStackTrace(System.err);
             } catch (UserNotIdentifiedException e) {
@@ -76,7 +79,7 @@ public class ClientWorker extends Thread {
     }
 
     public void sendMessage(String message) {
-        out.println(System.lineSeparator());
+        out.println(message);
     }
 
     public void stopRunning() {
@@ -103,6 +106,7 @@ public class ClientWorker extends Thread {
                     throw new InvalidNicknameException();
                 }
                 userService.setUserNickname(tokens[1], user);
+                sendMessage("Nickname successfully set!");
                 break;
             case "/snd":
                 if (tokens.length == 1) {
