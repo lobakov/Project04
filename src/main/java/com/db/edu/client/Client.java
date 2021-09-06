@@ -2,67 +2,34 @@ package com.db.edu.client;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-    Scanner sc = new Scanner(System.in);
-    String str = "";
-    private PrintWriter out;
-    BufferedReader in;
-    private Socket connection;
-    private void initialize() throws IOException {
-        connection = new Socket("localhohst", 10_000);
-        out = new PrintWriter(connection.getOutputStream());
-        in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    }
 
-    public Client() {
-        try {
-            initialize();
+    public Client() {}
 
-            MessageReceiver receiver = new MessageReceiver(this);
+    public void connect() {
+        try (Socket connection = new Socket("localhost", 10_000);
+             PrintWriter out = new PrintWriter(connection.getOutputStream());
+             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+
+            final Scanner sc = new Scanner(System.in);
+            String str;
+
+            MessageReceiver receiver = new MessageReceiver(in);
             receiver.start();
 
-            while (!str.equals("exit")) {
+            do {
                 str = sc.nextLine();
-                int stringEnd = str.indexOf(" ");
-                String command;
-                if (stringEnd != -1) {
-                    command = str.substring(0, stringEnd);
-                } else {
-                    command = str;
-                }
-                switch (command) {
-                    case "/hist":
-                        System.out.print("Nu /hist i /hist");
-                        break;
-                    case "/chid":
-                        System.out.print("Nu /chid i /chid");
-                        break;
-                    case "/snd":
-                        System.out.print(str.substring(stringEnd));
-                        break;
-                    default:
-                        System.out.println("Error");
-                        break;
-                }
-            }
+                out.println(str);
+            } while (!str.equals("exit"));
+
             receiver.setStop();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         } catch (IOException ioException) {
             ioException.printStackTrace();
-        } finally {
-            close();
-        }
-    }
-
-    private void close() {
-        try {
-            in.close();
-            out.close();
-            connection.close();
-        } catch (Exception e) {
-            System.out.println("Problems with closing");
-            e.printStackTrace();
         }
     }
 
