@@ -87,7 +87,7 @@ public class ClientWorker extends Thread {
     }
 
     private void processCommand(String command) throws UserNotIdentifiedException,
-            UnknownCommandException, InvalidNicknameException {
+            UnknownCommandException, InvalidNicknameException, IOException {
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 

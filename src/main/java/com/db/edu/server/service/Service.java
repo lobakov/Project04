@@ -7,7 +7,10 @@ import com.db.edu.server.UsersController;
 import com.db.edu.server.dao.User;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Service {
@@ -20,10 +23,10 @@ public class Service {
         UsersController.sendMessageToAllUsers(formattedMessage, DiscussionStorage.getUsersById(discussionId));
     }
 
-    public void getMessagesFromDiscussion(int discussionId, User user) throws UserNotIdentifiedException {
+    public void getMessagesFromDiscussion(int discussionId, User user) throws UserNotIdentifiedException, IOException {
         checkUserIdentified(user);
-        BufferedReader reader = getReader(getFileName(discussionId));
-        UsersController.sendAllMessagesToUser(reader.lines().collect(Collectors.toList()), user.getId());
+        List<String> lines = Files.readAllLines(Paths.get(getFileName(discussionId)));
+        UsersController.sendAllMessagesToUser(lines, user.getId());
     }
 
     private void saveMessage(BufferedWriter writer, String formattedMessage) {
@@ -62,22 +65,6 @@ public class Service {
             }
         }
         return writer;
-    }
-
-    private BufferedReader getReader(String fileName) {
-        BufferedReader reader = BufferStorage.getBufferedReaderByFileName(fileName);
-        if (reader == null) {
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(
-                                new BufferedInputStream(
-                                        new FileInputStream(fileName))));
-                BufferStorage.save(fileName, reader);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("File not found", e);
-            }
-        }
-        return reader;
     }
 
     private void checkUserIdentified(User user) throws UserNotIdentifiedException {
