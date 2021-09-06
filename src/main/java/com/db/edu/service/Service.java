@@ -1,6 +1,7 @@
 package com.db.edu.service;
 
 import com.db.edu.dao.Discussion;
+import com.db.edu.dao.User;
 import com.db.edu.storage.BufferStorage;
 
 import java.io.*;
@@ -11,10 +12,16 @@ import java.util.stream.Collectors;
 import static com.db.edu.storage.DiscussionStorage.getDiscussionById;
 
 public class Service {
-    public void saveAndSendMessage(String message, int discussionId) {
+    public void saveAndSendMessage(String message, int discussionId, User user) {
+        if (message.length() > 150) {
+            throw new RuntimeException();
+        }
+        if (user.getLogin() == null) {
+            throw new UserNotIdentifiedException();
+        }
         BufferedWriter writer = getWriter(getFileName(discussionId));
         LocalDateTime dateTime = LocalDateTime.now();
-        String formattedMessage = dateTime + ": " + message;
+        String formattedMessage = user.getLogin() + ": " + message + " (" + dateTime + ")";
         try {
             writer.write(formattedMessage);
             writer.newLine();
