@@ -1,4 +1,4 @@
-package com.db.edu.service;
+package com.db.edu.server.service;
 
 import com.db.edu.dao.Discussion;
 import com.db.edu.dao.User;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.db.edu.storage.DiscussionStorage.getDiscussionById;
+import static com.db.edu.server.storage.DiscussionStorage.getDiscussionById;
 
 public class Service {
     public void saveAndSendMessage(String message, int discussionId, User user) {

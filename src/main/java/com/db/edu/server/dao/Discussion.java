@@ -1,4 +1,4 @@
-package com.db.edu.dao;
+package com.db.edu.server.dao;
 
 import java.util.List;
 
