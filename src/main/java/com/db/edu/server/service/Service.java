@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Service {
     public void saveAndSendMessage(String message, int discussionId, User user) throws UserNotIdentifiedException {
@@ -29,7 +28,7 @@ public class Service {
         UsersController.sendAllMessagesToUser(lines, user.getId());
     }
 
-    private void saveMessage(BufferedWriter writer, String formattedMessage) {
+    void saveMessage(BufferedWriter writer, String formattedMessage) {
         try {
             writer.write(formattedMessage);
             writer.newLine();
@@ -39,7 +38,7 @@ public class Service {
         }
     }
 
-    private String formatMessage(String nickname, String message) {
+    String formatMessage(String nickname, String message) {
         return nickname + ": " + message + " (" + LocalDateTime.now() + ")";
     }
 
@@ -47,11 +46,11 @@ public class Service {
         user.setNickname(nickname);
     }
 
-    private String getFileName(int discussionId) {
+    String getFileName(int discussionId) {
         return "discussion" + discussionId + ".txt";
     }
 
-    private BufferedWriter getWriter(String fileName) {
+    BufferedWriter getWriter(String fileName) {
         BufferedWriter writer = BufferStorage.getBufferedWriterByFileName(fileName);
         if (writer == null) {
             try {
@@ -67,13 +66,13 @@ public class Service {
         return writer;
     }
 
-    private void checkUserIdentified(User user) throws UserNotIdentifiedException {
+    void checkUserIdentified(User user) throws UserNotIdentifiedException {
         if (user.getNickname() == null) {
             throw new UserNotIdentifiedException();
         }
     }
 
-    private void checkMessageLength(String message) {
+    void checkMessageLength(String message) {
         if (message.length() > 150) {
             throw new RuntimeException();
         }
