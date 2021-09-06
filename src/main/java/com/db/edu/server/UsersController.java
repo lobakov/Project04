@@ -30,4 +30,10 @@ public class UsersController {
     public static void addUserConnection(int id, ClientWorker worker) {
         workerConnections.put(id, worker);
     }
+
+    public static boolean isNicknameTaken(String nickname) {
+        return workerConnections.values().stream()
+                .map(worker -> worker.getUser().getNickname())
+                .anyMatch(nickname::equals);
+    }
 }

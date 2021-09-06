@@ -1,5 +1,6 @@
 package com.db.edu.server.worker;
 
+import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.server.model.User;
 import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.UnknownCommandException;
@@ -34,6 +35,10 @@ public class ClientWorker extends Thread {
         }
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public void run() {
         sendGreeting();
@@ -51,6 +56,8 @@ public class ClientWorker extends Thread {
             } catch (InvalidNicknameException e) {
                 sendMessage("Your nickname contains a whitespace character! Please choose a nickname " +
                         "without any whitespace characters.");
+            } catch (DuplicateNicknameException e) {
+                sendMessage("Your nickname is already taken! Please choose another one.");
             }
         }
         try {
@@ -86,7 +93,7 @@ public class ClientWorker extends Thread {
     }
 
     private void processCommand(String command) throws UserNotIdentifiedException,
-            UnknownCommandException, InvalidNicknameException, IOException {
+            UnknownCommandException, InvalidNicknameException, DuplicateNicknameException, IOException {
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 

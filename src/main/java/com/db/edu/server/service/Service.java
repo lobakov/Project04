@@ -1,5 +1,6 @@
 package com.db.edu.server.service;
 
+import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.db.edu.server.UsersController.isNicknameTaken;
 import static com.db.edu.server.UsersController.sendMessageToUser;
 import static com.db.edu.server.storage.RoomStorage.addUserToRoom;
 import static com.db.edu.server.storage.RoomStorage.removeUserFromRoom;
@@ -47,7 +49,10 @@ public class Service {
         return nickname + ": " + message + " (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")";
     }
 
-    public void setUserNickname(String nickname, User user) {
+    public void setUserNickname(String nickname, User user) throws DuplicateNicknameException {
+        if (isNicknameTaken(nickname)) {
+            throw new DuplicateNicknameException();
+        }
         user.setNickname(nickname);
         sendMessageToUser("Nickname successfully set!", user.getId());
     }
