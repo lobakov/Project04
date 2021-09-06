@@ -1,0 +1,1 @@
+java -jar build/server.jar-jar-with-dependencies.jar

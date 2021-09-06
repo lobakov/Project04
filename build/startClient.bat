@@ -1,1 +1,0 @@
-java -jar client.jar-jar-with-dependencies.jar
