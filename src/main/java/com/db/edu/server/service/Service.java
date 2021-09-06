@@ -3,8 +3,8 @@ package com.db.edu.server.service;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.DiscussionStorage;
-import com.db.edu.server.UsersController;
 import com.db.edu.server.dao.User;
+import com.db.edu.server.storage.UsersController;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -12,20 +12,11 @@ import java.util.stream.Collectors;
 
 public class Service {
     public void saveAndSendMessage(String message, int discussionId, User user) throws UserNotIdentifiedException {
-        if (message.length() > 150) {
-            throw new RuntimeException();
-        }
+        checkMessageLength(message);
         checkUserIdentified(user);
+        String formattedMessage = formatMessage(user.getNickname(), message);
         BufferedWriter writer = getWriter(getFileName(discussionId));
-        LocalDateTime dateTime = LocalDateTime.now();
-        String formattedMessage = user.getNickname() + ": " + message + " (" + dateTime + ")";
-        try {
-            writer.write(formattedMessage);
-            writer.newLine();
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't save message to file", e);
-        }
+        saveMessage(writer, formattedMessage);
         UsersController.sendMessageToAllUsers(formattedMessage, DiscussionStorage.getUsersById(discussionId));
     }
 
@@ -33,6 +24,20 @@ public class Service {
         checkUserIdentified(user);
         BufferedReader reader = getReader(getFileName(discussionId));
         UsersController.sendAllMessagesToUser(reader.lines().collect(Collectors.toList()), user.getId());
+    }
+
+    private void saveMessage(BufferedWriter writer, String formattedMessage) {
+        try {
+            writer.write(formattedMessage);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't save message to file", e);
+        }
+    }
+
+    private String formatMessage(String nickname, String message) {
+        return nickname + ": " + message + " (" + LocalDateTime.now() + ")";
     }
 
     public void setUserNickname(String nickname, User user) {
@@ -78,6 +83,12 @@ public class Service {
     private void checkUserIdentified(User user) throws UserNotIdentifiedException {
         if (user.getNickname() == null) {
             throw new UserNotIdentifiedException();
+        }
+    }
+
+    private void checkMessageLength(String message) {
+        if (message.length() > 150) {
+            throw new RuntimeException();
         }
     }
 }
