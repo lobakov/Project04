@@ -17,7 +17,6 @@ public class ClientWorker extends Thread {
     private Socket socket;
     private Service userService;
     private User user;
-    private int discussionId;
     private PrintWriter out;
     private BufferedReader in;
     private boolean running;
@@ -27,7 +26,6 @@ public class ClientWorker extends Thread {
         this.userService = userService;
         this.user = user;
         this.running = true;
-        this.discussionId = 1;
         try {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -76,6 +74,7 @@ public class ClientWorker extends Thread {
         sendMessage("/snd message - sends a message to all users in the chat");
         sendMessage("/hist - get the full chat history");
         sendMessage("/chid nickname - set your nickname");
+        sendMessage("/chroom roomname - change a room");
     }
 
     public void sendMessage(String message) {
@@ -96,7 +95,7 @@ public class ClientWorker extends Thread {
                 if (tokens.length > 1) {
                     throw new UnknownCommandException();
                 }
-                userService.getMessagesFromDiscussion(discussionId, user);
+                userService.getMessagesFromRoom(user);
                 break;
             case "/chid":
                 if (tokens.length == 1) {
@@ -106,13 +105,18 @@ public class ClientWorker extends Thread {
                     throw new InvalidNicknameException();
                 }
                 userService.setUserNickname(tokens[1], user);
-                sendMessage("Nickname successfully set!");
+                break;
+            case "/chroom":
+                if (tokens.length != 2) {
+                    throw new UnknownCommandException();
+                }
+                userService.setUserRoom(tokens[1], user);
                 break;
             case "/snd":
                 if (tokens.length == 1) {
                     throw new UnknownCommandException();
                 }
-                userService.saveAndSendMessage(extractMessage(command), discussionId, user);
+                userService.saveAndSendMessage(extractMessage(command), user);
                 break;
             case "/help":
                 help();

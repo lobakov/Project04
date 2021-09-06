@@ -1,7 +1,7 @@
 package com.db.edu.server;
 
 import com.db.edu.server.service.Service;
-import com.db.edu.server.storage.DiscussionStorage;
+import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.worker.ClientWorker;
 import com.db.edu.server.dao.User;
 
@@ -21,7 +21,7 @@ public class Server {
                 User user = new User(id);
                 ClientWorker worker = new ClientWorker(userSocket, user, userService);
                 UsersController.addUserConnection(id, worker);
-                DiscussionStorage.addUserToDiscussion(id, 1);
+                userService.setUserRoom("general", user);
                 worker.start();
             }
         } catch (IOException e) {
