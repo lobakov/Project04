@@ -1,4 +1,4 @@
-package com.db.edu.storage;
+package com.db.edu.server.storage;
 
 import java.util.List;
 

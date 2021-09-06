@@ -1,10 +1,7 @@
-package com.db.edu.storage;
-
-import com.db.edu.dao.Discussion;
+package com.db.edu.server.storage;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.List;
 import java.util.Map;
 
 public class BufferStorage {
