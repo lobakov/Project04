@@ -1,7 +1,7 @@
 package com.db.edu.server.service;
 
-import com.db.edu.server.dao.Discussion;
 import com.db.edu.server.dao.User;
+import com.db.edu.server.dao.Discussion;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.UsersController;
 
