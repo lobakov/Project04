@@ -3,6 +3,10 @@ package com.db.edu.storage;
 import java.util.List;
 
 public class UsersController {
-    public static void saveToUsers(List<Integer> users) {
+
+    public static void sendAllMessagesToUser(List<String> messages, Integer id) {
+    }
+
+    public static void sendMessageToAllUsers(String message, List<Integer> userIds) {
     }
 }

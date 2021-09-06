@@ -3,6 +3,7 @@ package com.db.edu.service;
 import com.db.edu.dao.Discussion;
 import com.db.edu.dao.User;
 import com.db.edu.storage.BufferStorage;
+import com.db.edu.storage.UsersController;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -30,13 +31,13 @@ public class Service {
             throw new RuntimeException("Couldn't save message to file", e);
         }
         Discussion discussion = getDiscussionById(discussionId);
-        UsersController.saveToUsers(discussion.getUsers());
+        UsersController.sendMessageToAllUsers(formattedMessage, discussion.getUsers());
     }
 
-    public List<String> getMessagesFromDiscussion(int discussionId) {
+    void getMessagesFromDiscussion(int discussionId, User user) {
         BufferedReader reader = getReader(getFileName(discussionId));
         Discussion discussion = getDiscussionById(discussionId);
-        return reader.lines().collect(Collectors.toList());
+        UsersController.sendAllMessagesToUser(reader.lines().collect(Collectors.toList()), user.getId());
     }
 
     private String getFileName(int discussionId) {
