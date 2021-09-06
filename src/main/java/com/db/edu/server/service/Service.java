@@ -1,16 +1,14 @@
 package com.db.edu.server.service;
 
-import com.db.edu.server.dao.Discussion;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
-import com.db.edu.server.storage.UsersController;
+import com.db.edu.server.storage.DiscussionStorage;
+import com.db.edu.server.UsersController;
 import com.db.edu.server.dao.User;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-
-import static com.db.edu.server.storage.DiscussionStorage.getDiscussionById;
 
 public class Service {
     public void saveAndSendMessage(String message, int discussionId, User user) throws UserNotIdentifiedException {
@@ -28,14 +26,12 @@ public class Service {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't save message to file", e);
         }
-        Discussion discussion = getDiscussionById(discussionId);
-        UsersController.sendMessageToAllUsers(formattedMessage, discussion.getUsers());
+        UsersController.sendMessageToAllUsers(formattedMessage, DiscussionStorage.getUsersById(discussionId));
     }
 
     public void getMessagesFromDiscussion(int discussionId, User user) throws UserNotIdentifiedException {
         checkUserIdentified(user);
         BufferedReader reader = getReader(getFileName(discussionId));
-        Discussion discussion = getDiscussionById(discussionId);
         UsersController.sendAllMessagesToUser(reader.lines().collect(Collectors.toList()), user.getId());
     }
 

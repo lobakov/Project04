@@ -2,7 +2,6 @@ package com.db.edu.server;
 
 import com.db.edu.server.service.Service;
 import com.db.edu.server.storage.DiscussionStorage;
-import com.db.edu.server.storage.UsersController;
 import com.db.edu.server.worker.ClientWorker;
 import com.db.edu.server.dao.User;
 
