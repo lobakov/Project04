@@ -4,12 +4,13 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.UsersController;
-import com.db.edu.server.dao.User;
+import com.db.edu.server.model.User;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.db.edu.server.UsersController.sendMessageToUser;
@@ -43,7 +44,7 @@ public class Service {
     }
 
     String formatMessage(String nickname, String message) {
-        return nickname + ": " + message + " (" + LocalDateTime.now() + ")";
+        return nickname + ": " + message + " (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")";
     }
 
     public void setUserNickname(String nickname, User user) {
@@ -61,7 +62,7 @@ public class Service {
     }
 
     String getFileName(int roomId) {
-        return "room" + roomId + ".txt";
+        return "src/main/resources/room" + roomId + ".txt";
     }
 
     BufferedWriter getWriter(String fileName) {

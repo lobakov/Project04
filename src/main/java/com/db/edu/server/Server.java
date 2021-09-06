@@ -1,9 +1,8 @@
 package com.db.edu.server;
 
 import com.db.edu.server.service.Service;
-import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.worker.ClientWorker;
-import com.db.edu.server.dao.User;
+import com.db.edu.server.model.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;

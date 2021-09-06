@@ -1,6 +1,6 @@
 package com.db.edu.server.worker;
 
-import com.db.edu.server.dao.User;
+import com.db.edu.server.model.User;
 import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.UnknownCommandException;
 import com.db.edu.exception.UserNotIdentifiedException;

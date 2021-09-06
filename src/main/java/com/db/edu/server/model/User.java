@@ -1,4 +1,4 @@
-package com.db.edu.server.dao;
+package com.db.edu.server.model;
 
 public class User {
     private final int id;
