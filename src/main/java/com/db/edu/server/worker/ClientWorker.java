@@ -28,8 +28,8 @@ public class ClientWorker extends Thread {
         this.running = true;
         this.discussionId = 1;
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
@@ -76,7 +76,7 @@ public class ClientWorker extends Thread {
     }
 
     public void sendMessage(String message) {
-        out.println(System.lineSeparator());
+        out.println(message);
     }
 
     public void stopRunning() {
