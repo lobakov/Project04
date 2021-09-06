@@ -2,29 +2,34 @@ package com.db.edu.server.service;
 
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
-import com.db.edu.server.storage.DiscussionStorage;
+import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.UsersController;
-import com.db.edu.server.dao.User;
+import com.db.edu.server.model.User;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.db.edu.server.UsersController.sendMessageToUser;
+import static com.db.edu.server.storage.RoomStorage.addUserToRoom;
+import static com.db.edu.server.storage.RoomStorage.removeUserFromRoom;
+
 public class Service {
-    public void saveAndSendMessage(String message, int discussionId, User user) throws UserNotIdentifiedException {
+    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
-        BufferedWriter writer = getWriter(getFileName(discussionId));
+        BufferedWriter writer = getWriter(getFileName(user.getRoomId()));
         saveMessage(writer, formattedMessage);
-        UsersController.sendMessageToAllUsers(formattedMessage, DiscussionStorage.getUsersById(discussionId));
+        UsersController.sendMessageToAllUsers(formattedMessage, RoomStorage.getUsersById(user.getRoomId()));
     }
 
-    public void getMessagesFromDiscussion(int discussionId, User user) throws UserNotIdentifiedException, IOException {
+    public void getMessagesFromRoom(User user) throws UserNotIdentifiedException, IOException {
         checkUserIdentified(user);
-        List<String> lines = Files.readAllLines(Paths.get(getFileName(discussionId)));
+        List<String> lines = Files.readAllLines(Paths.get(getFileName(user.getRoomId())));
         UsersController.sendAllMessagesToUser(lines, user.getId());
     }
 
@@ -39,15 +44,25 @@ public class Service {
     }
 
     String formatMessage(String nickname, String message) {
-        return nickname + ": " + message + " (" + LocalDateTime.now() + ")";
+        return nickname + ": " + message + " (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")";
     }
 
     public void setUserNickname(String nickname, User user) {
         user.setNickname(nickname);
+        sendMessageToUser("Nickname successfully set!", user.getId());
     }
 
-    String getFileName(int discussionId) {
-        return "discussion" + discussionId + ".txt";
+    public void setUserRoom(String roomName, User user) {
+        if (user.getRoomId() != 0) {
+            removeUserFromRoom(user.getId(), user.getRoomId());
+        }
+        Integer roomId = addUserToRoom(user.getId(), roomName);
+        user.setRoomId(roomId);
+        sendMessageToUser("Joined #" + roomName + "!", user.getId());
+    }
+
+    String getFileName(int roomId) {
+        return "src/main/resources/room" + roomId + ".txt";
     }
 
     BufferedWriter getWriter(String fileName) {
