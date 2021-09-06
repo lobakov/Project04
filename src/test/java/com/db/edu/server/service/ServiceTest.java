@@ -1,24 +1,26 @@
 package com.db.edu.server.service;
 
+import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.worker.ClientWorker;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static java.nio.file.Files.readString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ServiceTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void serviceShouldThrowRuntimeExceptionWhenMessageIsTooLong() {
@@ -73,7 +75,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() {
+    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws DuplicateNicknameException {
         Service sutService = new Service();
         User user = new User(10);
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
