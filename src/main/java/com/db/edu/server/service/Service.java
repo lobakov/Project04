@@ -1,8 +1,9 @@
 package com.db.edu.server.service;
 
-import com.db.edu.dao.Discussion;
-import com.db.edu.dao.User;
-import com.db.edu.storage.BufferStorage;
+import com.db.edu.server.dao.Discussion;
+import com.db.edu.server.dao.User;
+import com.db.edu.server.storage.BufferStorage;
+import com.db.edu.server.storage.UsersController;
 
 import java.io.*;
 import java.time.LocalDateTime;
