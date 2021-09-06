@@ -1,0 +1,1 @@
+java -cp target/classes com.db.edu.server.Server
