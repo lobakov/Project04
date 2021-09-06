@@ -1,7 +1,9 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.UserNotIdentifiedException;
+import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
+import com.db.edu.server.worker.ClientWorker;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
@@ -70,15 +72,17 @@ public class ServiceTest {
         sutService.checkUserIdentified(userStub);
     }
 
-//    @Test
-//    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() {
-//        Service sutService = new Service();
-//        User user = new User(10);
-//
-//        sutService.setUserNickname("Musk", user);
-//
-//        assertEquals("Musk", user.getNickname());
-//    }
+    @Test
+    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() {
+        Service sutService = new Service();
+        User user = new User(10);
+        ClientWorker clientWorkerStub = mock(ClientWorker.class);
+
+        UsersController.addUserConnection(10, clientWorkerStub);
+        sutService.setUserNickname("Musk", user);
+
+        assertEquals("Musk", user.getNickname());
+    }
 
     @Test
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
