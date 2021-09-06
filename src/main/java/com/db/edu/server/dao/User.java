@@ -1,12 +1,19 @@
-package com.db.edu.dao;
+package com.db.edu.server.dao;
 
 public class User {
-    private int id;
+    private final int id;
+    private String nickname;
 
-    private String login;
+    public User(int id) {
+        this.id = id;
+    }
 
-    public String getLogin() {
-        return login;
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public Integer getId() {

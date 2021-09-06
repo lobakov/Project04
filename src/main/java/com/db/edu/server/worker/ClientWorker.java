@@ -1,10 +1,10 @@
 package com.db.edu.server.worker;
 
-import com.db.edu.dao.User;
+import com.db.edu.server.dao.User;
 import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.UnknownCommandException;
 import com.db.edu.exception.UserNotIdentifiedException;
-import com.db.edu.service.Service;
+import com.db.edu.server.service.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;

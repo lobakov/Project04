@@ -1,10 +1,10 @@
 package com.db.edu.server;
 
-import com.db.edu.dao.User;
+import com.db.edu.server.service.Service;
+import com.db.edu.server.storage.DiscussionStorage;
+import com.db.edu.server.storage.UsersController;
 import com.db.edu.server.worker.ClientWorker;
-import com.db.edu.service.Service;
-import com.db.edu.storage.DiscussionStorage;
-import com.db.edu.storage.UsersController;
+import com.db.edu.server.dao.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;
