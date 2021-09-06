@@ -1,9 +1,12 @@
 package com.db.edu.dao;
 
 public class User {
-    private int id;
-
+    private final int id;
     private String login;
+
+    public User(int id) {
+        this.id = id;
+    }
 
     public void setLogin(String login) {
         this.login = login;
