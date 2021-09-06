@@ -26,7 +26,7 @@ public class Service {
         UsersController.sendAllMessagesToUser(reader.lines().collect(Collectors.toList()), user.getId());
     }
 
-    private void saveMessage(BufferedWriter writer, String formattedMessage) {
+    void saveMessage(BufferedWriter writer, String formattedMessage) {
         try {
             writer.write(formattedMessage);
             writer.newLine();
@@ -36,7 +36,7 @@ public class Service {
         }
     }
 
-    private String formatMessage(String nickname, String message) {
+    String formatMessage(String nickname, String message) {
         return nickname + ": " + message + " (" + LocalDateTime.now() + ")";
     }
 
@@ -44,11 +44,11 @@ public class Service {
         user.setNickname(nickname);
     }
 
-    private String getFileName(int discussionId) {
+    String getFileName(int discussionId) {
         return "discussion" + discussionId + ".txt";
     }
 
-    private BufferedWriter getWriter(String fileName) {
+    BufferedWriter getWriter(String fileName) {
         BufferedWriter writer = BufferStorage.getBufferedWriterByFileName(fileName);
         if (writer == null) {
             try {
@@ -64,7 +64,7 @@ public class Service {
         return writer;
     }
 
-    private BufferedReader getReader(String fileName) {
+    BufferedReader getReader(String fileName) {
         BufferedReader reader = BufferStorage.getBufferedReaderByFileName(fileName);
         if (reader == null) {
             try {
@@ -80,13 +80,13 @@ public class Service {
         return reader;
     }
 
-    private void checkUserIdentified(User user) throws UserNotIdentifiedException {
+    void checkUserIdentified(User user) throws UserNotIdentifiedException {
         if (user.getNickname() == null) {
             throw new UserNotIdentifiedException();
         }
     }
 
-    private void checkMessageLength(String message) {
+    void checkMessageLength(String message) {
         if (message.length() > 150) {
             throw new RuntimeException();
         }
