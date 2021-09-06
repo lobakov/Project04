@@ -15,4 +15,7 @@ public class DiscussionStorage {
         }
         throw new RuntimeException("Discussion doesn't exist");
     }
+
+    public static void addUserToDiscussion(int id, int i) {
+    }
 }

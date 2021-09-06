@@ -8,7 +8,6 @@ import com.db.edu.server.dao.User;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.db.edu.server.storage.DiscussionStorage.getDiscussionById;
