@@ -28,6 +28,7 @@ public class Client {
             do {
                 str = sc.nextLine();
                 out.println(str);
+                out.flush();
             } while (!str.equals("exit"));
 
             receiver.setStop();
