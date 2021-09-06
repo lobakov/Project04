@@ -81,7 +81,11 @@ public class ServiceTest {
 
         when(clientWorkerStub.getUser()).thenReturn(user);
         UsersController.addUserConnection(10, clientWorkerStub);
-        sutService.setUserNickname("Musk", user);
+        try {
+            sutService.setUserNickname("Musk", user);
+        } catch (DuplicateNicknameException e) {
+            e.printStackTrace();
+        }
 
         assertEquals("Musk", user.getNickname());
     }
