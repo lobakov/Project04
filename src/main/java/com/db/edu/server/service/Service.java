@@ -1,15 +1,16 @@
-package com.db.edu.service;
+package com.db.edu.server.service;
 
-import com.db.edu.dao.Discussion;
-import com.db.edu.dao.User;
-import com.db.edu.storage.BufferStorage;
+import com.db.edu.server.dao.User;
+import com.db.edu.server.dao.Discussion;
+import com.db.edu.server.storage.BufferStorage;
+import com.db.edu.server.storage.UsersController;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.db.edu.storage.DiscussionStorage.getDiscussionById;
+import static com.db.edu.server.storage.DiscussionStorage.getDiscussionById;
 
 public class Service {
     public void saveAndSendMessage(String message, int discussionId, User user) {
