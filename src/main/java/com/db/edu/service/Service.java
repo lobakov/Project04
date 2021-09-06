@@ -1,6 +1,7 @@
 package com.db.edu.service;
 
 import com.db.edu.dao.Discussion;
+import com.db.edu.storage.UsersController;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class Service {
             reader = new BufferedReader(
                     new InputStreamReader(
                             new BufferedInputStream(
-                                    new FileInputStream(path)))))
+                                    new FileInputStream(path))));
 
         } catch (FileNotFoundException ex) {
             throw new RuntimeException("File not found", ex);

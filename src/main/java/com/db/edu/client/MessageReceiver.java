@@ -1,13 +1,14 @@
 package com.db.edu.client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 class MessageReceiver extends Thread {
-    private final Client client;
+    private final BufferedReader in;
     private boolean stopped;
 
-    public MessageReceiver(Client client) {
-        this.client = client;
+    public MessageReceiver(BufferedReader in) {
+        this.in = in;
     }
 
     public void setStop() {
@@ -18,7 +19,7 @@ class MessageReceiver extends Thread {
     public void run() {
         try {
             while (!stopped) {
-                String message = client.in.readLine();
+                String message = in.readLine();
                 System.out.println(message);
 
             }
