@@ -24,7 +24,12 @@ class MessageReceiver extends Thread {
         try {
             while (!stopped) {
                 String message = in.readLine();
-                System.out.println(message);
+                if (message != null) {
+                    System.out.println(message);
+                } else {
+                    setStop();
+                    throw new SocketException();
+                }
 
             }
         } catch (SocketException socketException) {

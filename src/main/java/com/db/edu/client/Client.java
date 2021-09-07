@@ -39,8 +39,8 @@ public class Client {
             } while (!str.equals("exit"));
 
             receiver.setStop();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioException) {
+            System.err.println("Restart me");
         }
     }
 

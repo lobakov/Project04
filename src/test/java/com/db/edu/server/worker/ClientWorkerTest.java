@@ -10,6 +10,7 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.CoreMatchers.containsString;
 
+@Disabled
 public class ClientWorkerTest {
     private PipedInputStream inputStream;
     private PipedOutputStream writer;
