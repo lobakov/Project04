@@ -66,13 +66,6 @@ public class ClientWorker extends Thread {
                 e.printStackTrace(System.err);
             }
         }
-        try {
-            out.close();
-            in.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
     }
 
     public void sendMessage(String message) {
@@ -84,6 +77,13 @@ public class ClientWorker extends Thread {
      */
     public void stopRunning() {
         this.running = false;
+        try {
+            out.close();
+            in.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     private void sendGreeting() {
@@ -92,7 +92,7 @@ public class ClientWorker extends Thread {
         help();
     }
 
-    private void help() {
+    public void help() {
         sendMessage("Available commands:");
         sendMessage("/help - list all possible commands");
         sendMessage("/snd message - sends a message to all users in the chat");
