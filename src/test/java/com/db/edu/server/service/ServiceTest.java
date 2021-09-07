@@ -1,6 +1,7 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
@@ -111,7 +112,7 @@ public class ServiceTest {
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
         Service sutService = new Service();
 
-        assertEquals("src/main/resources/228.txt", getFileName("228"));
+        assertEquals("src/main/resources/room/228.txt", getFileName("228"));
     }
 
     @Test
