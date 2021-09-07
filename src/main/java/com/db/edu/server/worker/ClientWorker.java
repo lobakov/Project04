@@ -20,6 +20,12 @@ public class ClientWorker extends Thread {
     private BufferedReader in;
     private boolean running;
 
+    /**
+     * Initialize ClientWorker and define input and output streams.
+     * @param socket (Socket)
+     * @param user (User)
+     * @param userService (Service)
+     */
     public ClientWorker(Socket socket, User user, Service userService) {
         this.socket = socket;
         this.userService = userService;
@@ -61,26 +67,13 @@ public class ClientWorker extends Thread {
         }
     }
 
-    public void sendGreeting() {
-        sendMessage("Welcome to the chat!");
-        sendMessage("Before you start chatting, please set your nickname using the '/chid nickname' command.");
-        help();
-    }
-
-    public void help() {
-        sendMessage("Available commands:");
-        sendMessage("/help - list all possible commands");
-        sendMessage("/snd message - sends a message to all users in the chat; message cannot be empty or be " +
-                        "longer than 150 characters");
-        sendMessage("/hist - get the full chat history");
-        sendMessage("/chid nickname - set your nickname; nickname cannot be empty or contain whitespaces");
-        sendMessage("/chroom roomname - change a room; room name cannot be empty or contain whitespaces");
-    }
-
     public void sendMessage(String message) {
         out.println(message);
     }
 
+    /**
+     * Boolean flag for stop running.
+     */
     public void stopRunning() {
         this.running = false;
         try {
@@ -90,6 +83,21 @@ public class ClientWorker extends Thread {
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    private void sendGreeting() {
+        sendMessage("Welcome to the chat!");
+        sendMessage("Before you start chatting, please set your nickname using the '/chid nickname' command.");
+        help();
+    }
+
+    public void help() {
+        sendMessage("Available commands:");
+        sendMessage("/help - list all possible commands");
+        sendMessage("/snd message - sends a message to all users in the chat");
+        sendMessage("/hist - get the full chat history");
+        sendMessage("/chid nickname - set your nickname");
+        sendMessage("/chroom roomname - change a room");
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {

@@ -8,6 +8,7 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.storage.BufferStorage;
+import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.worker.ClientWorker;
 import org.junit.jupiter.api.*;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.db.edu.server.storage.RoomStorage.getFileName;
+import static com.db.edu.server.storage.RoomStorage.reset;
 import static java.nio.file.Files.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
