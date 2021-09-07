@@ -10,11 +10,20 @@ public class Client {
     private final String HOST;
     private final int PORT;
 
+    /**
+     * Configure HOST and PORT for client.
+     * @param host (String)
+     * @param port (int)
+     */
     public Client(String host, int port) {
         HOST = host;
         PORT = port;
     }
 
+    /**
+     * Set up connection with the server. Define input and output streams.
+     * Settle up isolated thread for message receiving.
+     */
     public void connect() {
         try (Socket connection = new Socket(HOST, PORT);
              PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8), true);

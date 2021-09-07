@@ -12,6 +12,9 @@ class MessageReceiver extends Thread {
         this.in = in;
     }
 
+    /**
+     * Boolean flag for stop initiation.
+     */
     public void setStop() {
         stopped = true;
     }
