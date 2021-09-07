@@ -40,4 +40,15 @@ public class UsersController {
                 .map(worker -> worker.getUser().getNickname())
                 .anyMatch(nickname::equals);
     }
+
+    public static void deleteAllUsers() {
+        for (ClientWorker worker: workerConnections.values()) {
+            worker.stopRunning();
+        }
+    }
+
+    public static void disconnectUser(int id) {
+        ClientWorker worker = workerConnections.remove(id);
+        worker.stopRunning();
+    }
 }

@@ -4,8 +4,10 @@ import com.db.edu.exception.*;
 import com.db.edu.exception.CommandProcessException;
 import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.exception.MessageTooLongException;
+import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
+import com.db.edu.server.storage.RoomStorage;
 
 import java.io.*;
 import java.net.Socket;
@@ -50,7 +52,7 @@ public class ClientWorker extends Thread {
             try {
                 processCommand(in.readLine());
             } catch (SocketException e) {
-                stopRunning();
+                disconnectUser();
             } catch (UserNotIdentifiedException e) {
                 sendMessage("You have not set your nickname yet! Please do so by using '/chid nickname'.");
             } catch (UnknownCommandException e) {
@@ -80,9 +82,14 @@ public class ClientWorker extends Thread {
             out.close();
             in.close();
             socket.close();
+            RoomStorage.removeUserFromRoom(user.getId(), user.getRoomId());
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    private void disconnectUser() {
+        UsersController.disconnectUser(user.getId());
     }
 
     private void sendGreeting() {
