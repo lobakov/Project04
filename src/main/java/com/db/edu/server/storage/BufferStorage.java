@@ -16,10 +16,6 @@ public class BufferStorage {
         return writers.get(fileName);
     }
 
-//    public static BufferedWriter removeBufferedWriterByFileName(String fileName) {
-//        return writers.remove(fileName);
-//    }
-
     public static void save(String fileName, BufferedWriter writer) {
         writers.put(fileName, writer);
     }

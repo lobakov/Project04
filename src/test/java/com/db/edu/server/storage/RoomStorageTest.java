@@ -33,7 +33,7 @@ class RoomStorageTest {
         loadAllRooms(getRoomFolder("src/test/resources/room/"));
 
         assertEquals(getNamesToIds().keySet(), new HashSet<>(Arrays.asList("room1", "room2")));
-        assertEquals(getIdsToMembers().size(), 2);
+        assertEquals(2, getIdsToMembers().size());
 
         Files.delete(Paths.get(roomPath + "/room1.txt"));
         Files.delete(Paths.get(roomPath + "/room2.txt"));
@@ -46,6 +46,6 @@ class RoomStorageTest {
         loadAllRooms(getRoomFolder("src/test/resources/room/"));
 
         assertEquals(getNamesToIds().keySet(), new HashSet<>());
-        assertEquals(getIdsToMembers().size(), 0);
+        assertEquals(0, getIdsToMembers().size());
     }
 }

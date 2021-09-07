@@ -2,9 +2,7 @@ package com.db.edu.client;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class Client {
     private final String host;
@@ -41,10 +39,8 @@ public class Client {
             } while (!str.equals("exit"));
 
             receiver.setStop();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioException) {
+            System.err.println("Restart me");
         }
     }
 
