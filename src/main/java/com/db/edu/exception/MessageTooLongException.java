@@ -1,4 +1,4 @@
 package com.db.edu.exception;
 
-public class MessageTooLongException extends Exception {
+public class MessageTooLongException extends CommandProcessException {
 }

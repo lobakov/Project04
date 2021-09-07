@@ -6,9 +6,9 @@ public class User {
     private int roomId;
     private String roomName;
 
-    public User(int id, String name) {
+    public User(int id, String roomName) {
         this.id = id;
-        this.roomName = name;
+        this.roomName = roomName;
     }
 
     public String getNickname() {
