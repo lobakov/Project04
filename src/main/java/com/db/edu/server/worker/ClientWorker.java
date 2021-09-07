@@ -66,22 +66,15 @@ public class ClientWorker extends Thread {
                 e.printStackTrace(System.err);
             }
         }
-        try {
-            out.close();
-            in.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
     }
 
-    private void sendGreeting() {
+    public void sendGreeting() {
         sendMessage("Welcome to the chat!");
         sendMessage("Before you start chatting, please set your nickname using the '/chid nickname' command.");
         help();
     }
 
-    private void help() {
+    public void help() {
         sendMessage("Available commands:");
         sendMessage("/help - list all possible commands");
         sendMessage("/snd message - sends a message to all users in the chat");
@@ -96,6 +89,13 @@ public class ClientWorker extends Thread {
 
     public void stopRunning() {
         this.running = false;
+        try {
+            out.close();
+            in.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {
