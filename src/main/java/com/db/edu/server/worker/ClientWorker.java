@@ -108,6 +108,10 @@ public class ClientWorker extends Thread {
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {
+        if (command == null) {
+            disconnectUser();
+            return;
+        }
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 
