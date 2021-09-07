@@ -12,6 +12,9 @@ class MessageReceiver extends Thread {
         this.in = in;
     }
 
+    /**
+     * Boolean flag for stop initiation.
+     */
     public void setStop() {
         stopped = true;
     }
@@ -25,7 +28,7 @@ class MessageReceiver extends Thread {
 
             }
         } catch (SocketException socketException) {
-            System.out.println("Can't connect to server");
+            System.err.println("Can't connect to server");
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }

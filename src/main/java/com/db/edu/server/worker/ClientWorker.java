@@ -7,12 +7,10 @@ import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 
 public class ClientWorker extends Thread {
     private Socket socket;
@@ -22,14 +20,20 @@ public class ClientWorker extends Thread {
     private BufferedReader in;
     private boolean running;
 
+    /**
+     * Initialize ClientWorker and define input and output streams.
+     * @param socket (Socket)
+     * @param user (User)
+     * @param userService (Service)
+     */
     public ClientWorker(Socket socket, User user, Service userService) {
         this.socket = socket;
         this.userService = userService;
         this.user = user;
         this.running = true;
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
@@ -62,6 +66,17 @@ public class ClientWorker extends Thread {
                 e.printStackTrace(System.err);
             }
         }
+    }
+
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+
+    /**
+     * Boolean flag for stop running.
+     */
+    public void stopRunning() {
+        this.running = false;
         try {
             out.close();
             in.close();
@@ -77,21 +92,13 @@ public class ClientWorker extends Thread {
         help();
     }
 
-    private void help() {
+    public void help() {
         sendMessage("Available commands:");
         sendMessage("/help - list all possible commands");
         sendMessage("/snd message - sends a message to all users in the chat");
         sendMessage("/hist - get the full chat history");
         sendMessage("/chid nickname - set your nickname");
         sendMessage("/chroom roomname - change a room");
-    }
-
-    public void sendMessage(String message) {
-        out.println(message);
-    }
-
-    public void stopRunning() {
-        this.running = false;
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {

@@ -5,15 +5,18 @@ import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
+import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.worker.ClientWorker;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.db.edu.server.storage.RoomStorage.getFileName;
+import static java.nio.file.Files.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -22,6 +25,19 @@ public class ServiceTest {
     @BeforeAll
     public static void initialization() {
         mockStatic(UsersController.class);
+    }
+
+    private final String filename = "test.txt";
+    private File file;
+
+    @BeforeEach
+    public void setUp() {
+        file = new File(filename);
+    }
+
+    @AfterEach
+    public void reset() {
+        file.delete();
     }
 
     @Test
@@ -111,8 +127,6 @@ public class ServiceTest {
 
     @Test
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
-        Service sutService = new Service();
-
         assertEquals("src/main/resources/room/228.txt", getFileName("228"));
     }
 
@@ -144,5 +158,25 @@ public class ServiceTest {
         sutService.setUserRoom("second room", user);
 
         assertEquals(2, user.getRoomId());
+    }
+
+    @Test
+    public void serviceShouldSaveMessageWhenGetsMessageAndUser() throws IOException {
+        Service sutService = new Service();
+        Path filePath = Paths.get(filename);
+        BufferedWriter bufferWrtr = new BufferedWriter(
+                                    new OutputStreamWriter(
+                                            new BufferedOutputStream(
+                                                    new FileOutputStream(filename, false))));
+        BufferStorage.save(filename, bufferWrtr);
+        BufferedWriter bufferedWriter = sutService.getWriter(filename);
+
+        sutService.saveMessage(bufferedWriter, "Hi!");
+
+        String actualString = readAllLines(filePath)
+                                        .toString()
+                                        .substring(1, readAllLines(filePath).toString().length() - 1);
+
+        assertEquals("Hi!", actualString);
     }
 }

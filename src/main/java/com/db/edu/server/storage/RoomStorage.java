@@ -36,6 +36,13 @@ public class RoomStorage {
                 e.printStackTrace();
             }
         }
+        File folder = new File(roomFolder);
+        for (final File file : Objects.requireNonNull(folder.listFiles())) {
+            String roomName = file.getName();
+            roomName = roomName.substring(0, roomName.length() - 4);
+            Integer roomId = namesToIds.computeIfAbsent(roomName, s -> roomIds.getAndIncrement());
+            idsToMembers.putIfAbsent(roomId, new HashSet<>());
+        }
         return new File(roomFolder);
     }
 
