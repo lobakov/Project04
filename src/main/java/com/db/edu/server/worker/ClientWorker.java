@@ -101,10 +101,11 @@ public class ClientWorker extends Thread {
     public void help() {
         sendMessage("Available commands:");
         sendMessage("/help - list all possible commands");
-        sendMessage("/snd message - sends a message to all users in the chat");
+        sendMessage("/snd message - sends a message to all users in the chat; message cannot be empty or longer than "
+                 + "150 characters");
         sendMessage("/hist - get the full chat history");
-        sendMessage("/chid nickname - set your nickname");
-        sendMessage("/chroom roomname - change a room");
+        sendMessage("/chid nickname - set your nickname; nickname cannot be empty or longer than 20 characters");
+        sendMessage("/chroom roomname - change a room; room name cannot be empty or longer than 20 characters");
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {
