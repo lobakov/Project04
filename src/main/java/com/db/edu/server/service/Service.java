@@ -77,8 +77,10 @@ public class Service {
         Path filePath = Paths.get(fileName);
         if (writer == null) {
             try {
-                Files.createDirectories(filePath.getParent());
-                Files.createFile(filePath);
+                if (!Files.exists(filePath)) {
+                    Files.createDirectories(filePath.getParent());
+                    Files.createFile(filePath);
+                }
                 writer = new BufferedWriter(
                         new OutputStreamWriter(
                                 new BufferedOutputStream(
