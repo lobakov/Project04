@@ -20,6 +20,12 @@ public class ClientWorker extends Thread {
     private BufferedReader in;
     private boolean running;
 
+    /**
+     * Initialize ClientWorker and define input and output streams.
+     * @param socket (Socket)
+     * @param user (User)
+     * @param userService (Service)
+     */
     public ClientWorker(Socket socket, User user, Service userService) {
         this.socket = socket;
         this.userService = userService;
@@ -69,6 +75,17 @@ public class ClientWorker extends Thread {
         }
     }
 
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+
+    /**
+     * Boolean flag for stop running.
+     */
+    public void stopRunning() {
+        this.running = false;
+    }
+
     private void sendGreeting() {
         sendMessage("Welcome to the chat!");
         sendMessage("Before you start chatting, please set your nickname using the '/chid nickname' command.");
@@ -82,14 +99,6 @@ public class ClientWorker extends Thread {
         sendMessage("/hist - get the full chat history");
         sendMessage("/chid nickname - set your nickname");
         sendMessage("/chroom roomname - change a room");
-    }
-
-    public void sendMessage(String message) {
-        out.println(message);
-    }
-
-    public void stopRunning() {
-        this.running = false;
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {
