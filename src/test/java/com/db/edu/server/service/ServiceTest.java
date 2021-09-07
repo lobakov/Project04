@@ -5,8 +5,12 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.worker.ClientWorker;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
+import javax.swing.text.Utilities;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -16,10 +20,13 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ServiceTest {
+    @BeforeAll
+    public static void initialization() {
+        mockStatic(UsersController.class);
+    }
 
     @Test
     public void serviceShouldThrowRuntimeExceptionWhenMessageIsTooLong() {
@@ -32,6 +39,15 @@ public class ServiceTest {
         User userStub = mock(User.class);
 
         assertThrows(RuntimeException.class, () -> sutService.saveAndSendMessage(tooLongMessage, userStub));
+    }
+
+    @Test
+    public void serviceShouldAcceptMessageWhenMessageLengthIsAcceptable() {
+        Service sutService = new Service();
+        String acceptableMessage = "To be, or not to be, that is the question:" +
+                                "Whether 'tis nobler in the mind to suffer";
+
+        sutService.checkMessageLength(acceptableMessage);
     }
 
     @Test
@@ -51,6 +67,16 @@ public class ServiceTest {
         when(userStub.getNickname()).thenReturn(null);
 
         assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
+    }
+
+    @Test
+    public void serviceShouldThrowDuplicateNicknameExceptionWhenUserNicknameExists() {
+        Service sutService = new Service();
+        User userStub = mock(User.class);
+
+        when(UsersController.isNicknameTaken("Musk")).thenReturn(true);
+
+        assertThrows(DuplicateNicknameException.class, () ->sutService.setUserNickname("Musk", userStub));
     }
 
     @Test
@@ -79,13 +105,10 @@ public class ServiceTest {
         User user = new User(10);
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
 
+        when(UsersController.isNicknameTaken("Musk")).thenReturn(false);
         when(clientWorkerStub.getUser()).thenReturn(user);
         UsersController.addUserConnection(10, clientWorkerStub);
-        try {
-            sutService.setUserNickname("Musk", user);
-        } catch (DuplicateNicknameException e) {
-            e.printStackTrace();
-        }
+        sutService.setUserNickname("Musk", user);
 
         assertEquals("Musk", user.getNickname());
     }
