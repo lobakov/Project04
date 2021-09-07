@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.CoreMatchers.containsString;
 
-@Disabled
 public class ClientWorkerTest {
     private PipedInputStream inputStream;
     private PipedOutputStream writer;
