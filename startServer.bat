@@ -1,1 +1,1 @@
-java -jar build/server.jar-jar-with-dependencies.jar -Dfile.encoding=UTF-8
+java -Dfile.encoding=cp866 -jar build/server.jar-jar-with-dependencies.jar

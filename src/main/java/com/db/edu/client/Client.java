@@ -25,18 +25,18 @@ public class Client {
      * Settle up isolated thread for message receiving.
      */
     public void connect() {
-        try (Socket connection = new Socket(host, port);
-             PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+        try (final Socket connection = new Socket(host, port);
+             final PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8), true);
+             final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+             final BufferedReader sc = new BufferedReader(new InputStreamReader(System.in))) {
 
-            final Scanner sc = new Scanner(System.in);
             String str;
 
             MessageReceiver receiver = new MessageReceiver(in);
             receiver.start();
 
             do {
-                str = sc.nextLine();
+                str = sc.readLine();
                 out.println(str);
             } while (!str.equals("exit"));
 

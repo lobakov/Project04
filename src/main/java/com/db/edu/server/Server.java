@@ -32,7 +32,7 @@ public class Server {
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace(System.err);
         }
     }

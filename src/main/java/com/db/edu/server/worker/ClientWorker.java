@@ -54,14 +54,13 @@ public class ClientWorker extends Thread {
             } catch (UserNotIdentifiedException e) {
                 sendMessage("You have not set your nickname yet! Please do so by using '/chid nickname'.");
             } catch (UnknownCommandException e) {
-                sendMessage("Unknown command! To get all possible commands, use the '/help' command.");
-            } catch (InvalidNicknameException e) {
-                sendMessage("Your nickname contains a whitespace character! Please choose a nickname " +
-                        "without any whitespace characters.");
-            } catch (DuplicateNicknameException e) {
-                sendMessage("Your nickname is already taken! Please choose another one.");
+                sendMessage("Unknown command: " + e.getMessage());
+            } catch (NicknameSettingException e) {
+                sendMessage("Error setting nickname: " + e.getMessage());
             } catch (MessageTooLongException e) {
                 sendMessage("Your message is too long! Our chat only supports messages up to 150 symbols.");
+            } catch (RoomNameTooLongException e) {
+                sendMessage("Your room name is too long, should be at most 20 characters!");
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
@@ -108,28 +107,28 @@ public class ClientWorker extends Thread {
         switch (commandType) {
             case "/hist":
                 if (tokens.length > 1) {
-                    throw new UnknownCommandException();
+                    throw new UnknownCommandException("/hist takes no arguments!");
                 }
                 userService.getMessagesFromRoom(user);
                 break;
             case "/chid":
                 if (tokens.length == 1) {
-                    throw new UnknownCommandException();
+                    throw new UnknownCommandException("nickname is empty!");
                 }
                 if (tokens.length > 2) {
-                    throw new InvalidNicknameException();
+                    throw new InvalidNicknameException("nickname contains a whitespace character!");
                 }
                 userService.setUserNickname(tokens[1], user);
                 break;
             case "/chroom":
                 if (tokens.length != 2) {
-                    throw new UnknownCommandException();
+                    throw new UnknownCommandException("room name contains a whitespace character!");
                 }
                 userService.setUserRoom(tokens[1], user);
                 break;
             case "/snd":
                 if (tokens.length == 1) {
-                    throw new UnknownCommandException();
+                    throw new UnknownCommandException("message is empty!");
                 }
                 userService.saveAndSendMessage(extractMessage(command), user);
                 break;
@@ -137,7 +136,7 @@ public class ClientWorker extends Thread {
                 help();
                 break;
             default:
-                throw new UnknownCommandException();
+                throw new UnknownCommandException("command not recognized!");
         }
     }
 
