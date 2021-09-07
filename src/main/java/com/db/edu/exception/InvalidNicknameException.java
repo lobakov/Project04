@@ -1,4 +1,4 @@
 package com.db.edu.exception;
 
-public class InvalidNicknameException extends Exception {
+public class InvalidNicknameException extends CommandProcessException {
 }

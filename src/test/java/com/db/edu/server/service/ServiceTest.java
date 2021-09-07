@@ -6,6 +6,7 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.worker.ClientWorker;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -122,5 +123,26 @@ public class ServiceTest {
         assertEquals("Musk: Hello Mars!" + " ("
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")",
                 sutService.formatMessage("Musk", "Hello Mars!"));
+    }
+
+    @Test
+    public void serviceShouldSetUserRoomWhenRoomIdDoesNotExist() {
+        Service sutService = new Service();
+        User user = new User(10, "general");
+
+        sutService.setUserRoom("first room", user);
+
+        assertEquals(1, user.getRoomId());
+    }
+
+    @Test
+    public void serviceShouldResetUserRoomWhenRoomIdExists() {
+        Service sutService = new Service();
+        User user = new User(10, "general");
+
+        sutService.setUserRoom("first room", user);
+        sutService.setUserRoom("second room", user);
+
+        assertEquals(2, user.getRoomId());
     }
 }

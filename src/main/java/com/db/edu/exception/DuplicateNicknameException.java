@@ -1,4 +1,4 @@
 package com.db.edu.exception;
 
-public class DuplicateNicknameException extends Exception {
+public class DuplicateNicknameException extends CommandProcessException {
 }
