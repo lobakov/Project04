@@ -26,13 +26,18 @@ public class Server {
         loadAllRooms(getRoomFolder("src/main/resources/room/"));
         try (final ServerSocket listener = new ServerSocket(10000)) {
             while (true) {
-                Socket userSocket = listener.accept();
-                int id = ids.getAndIncrement();
-                User user = new User(id, "general");
-                ClientWorker worker = new ClientWorker(userSocket, user, userService);
-                UsersController.addUserConnection(id, worker);
-                userService.setUserRoom("general", user);
-                worker.start();
+                try {
+                    Socket userSocket = listener.accept();
+                    int id = ids.getAndIncrement();
+                    User user = new User(id, "general");
+                    ClientWorker worker = new ClientWorker(userSocket, user, userService);
+                    UsersController.addUserConnection(id, worker);
+                    userService.setUserRoom("general", user);
+                    worker.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
