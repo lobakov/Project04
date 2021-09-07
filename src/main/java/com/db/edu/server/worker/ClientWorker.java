@@ -14,8 +14,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
-import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
-
 public class ClientWorker extends Thread {
     private Socket socket;
     private Service userService;

@@ -41,4 +41,12 @@ public class RoomStorage {
     public static void removeUserFromRoom(int userId, int roomId) {
         idsToMembers.get(roomId).remove(userId);
     }
+
+    public static Map<String, Integer> getNamesToIds() {
+        return namesToIds;
+    }
+
+    public static Map<Integer, Set<Integer>> getIdsToMembers() {
+        return idsToMembers;
+    }
 }
