@@ -1,6 +1,10 @@
 package com.db.edu.server.storage;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,6 +18,14 @@ public class RoomStorage {
      * Upload all the names of rooms from the rooms files directory to the map.
      */
     public static void loadAllRooms() {
+        Path path = Paths.get(roomFolder);
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         File folder = new File(roomFolder);
         for (final File file : Objects.requireNonNull(folder.listFiles())) {
             String roomName = file.getName();
