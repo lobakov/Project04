@@ -12,13 +12,13 @@ public class RoomStorage {
     static private Map<String, Integer> namesToIds = new HashMap<>();
     static private Map<Integer, Set<Integer>> idsToMembers = new HashMap<>();
     static private AtomicInteger roomIds = new AtomicInteger(1);
-    static private final String roomFolder = "src/main/resources/room/";
+    static private final String ROOM_PATH = "src/main/resources/room/";
 
     /**
      * Upload all the names of rooms from the rooms files directory to the map.
      */
     public static void loadAllRooms() {
-        Path path = Paths.get(roomFolder);
+        Path path = Paths.get(ROOM_PATH);
         if (!Files.exists(path)) {
             try {
                 Files.createDirectories(path);
@@ -26,7 +26,7 @@ public class RoomStorage {
                 e.printStackTrace();
             }
         }
-        File folder = new File(roomFolder);
+        File folder = new File(ROOM_PATH);
         for (final File file : Objects.requireNonNull(folder.listFiles())) {
             String roomName = file.getName();
             roomName = roomName.substring(0, roomName.length() - 4);
@@ -47,7 +47,7 @@ public class RoomStorage {
     }
 
     public static String getFileName(String roomName) {
-        return roomFolder + roomName + ".txt";
+        return ROOM_PATH + roomName + ".txt";
     }
 
     public static void removeUserFromRoom(int userId, int roomId) {

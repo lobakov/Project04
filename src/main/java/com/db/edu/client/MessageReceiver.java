@@ -25,7 +25,7 @@ class MessageReceiver extends Thread {
 
             }
         } catch (SocketException socketException) {
-            System.out.println("Can't connect to server");
+            System.err.println("Can't connect to server");
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
