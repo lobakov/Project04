@@ -9,10 +9,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
+
 public class Server {
     public static void main(String[] args) {
         AtomicInteger ids = new AtomicInteger();
         Service userService = new Service();
+        loadAllRooms();
         try (final ServerSocket listener = new ServerSocket(10000)) {
             while (true) {
                 Socket userSocket = listener.accept();
