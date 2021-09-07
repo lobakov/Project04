@@ -9,13 +9,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.db.edu.server.storage.RoomStorage.getRoomFolder;
 import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
 
 public class Server {
     public static void main(String[] args) {
         AtomicInteger ids = new AtomicInteger();
         Service userService = new Service();
-        loadAllRooms();
+        loadAllRooms(getRoomFolder("src/main/resources/room/"));
         try (final ServerSocket listener = new ServerSocket(10000)) {
             while (true) {
                 Socket userSocket = listener.accept();
@@ -26,7 +27,7 @@ public class Server {
                 userService.setUserRoom("general", user);
                 worker.start();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace(System.err);
         }
     }

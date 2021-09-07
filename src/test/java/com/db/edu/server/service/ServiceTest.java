@@ -2,10 +2,13 @@ package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.exception.MessageTooLongException;
+import com.db.edu.exception.NicknameSettingException;
+import com.db.edu.exception.RoomNameTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.storage.BufferStorage;
+import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.worker.ClientWorker;
 import org.junit.jupiter.api.*;
 
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.db.edu.server.storage.RoomStorage.getFileName;
+import static com.db.edu.server.storage.RoomStorage.reset;
 import static java.nio.file.Files.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -112,7 +116,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws DuplicateNicknameException {
+    public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws NicknameSettingException {
         Service sutService = new Service();
         User user = new User(10, "general");
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
@@ -140,7 +144,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldSetUserRoomWhenRoomIdDoesNotExist() {
+    public void serviceShouldSetUserRoomWhenRoomIdDoesNotExist() throws RoomNameTooLongException {
         Service sutService = new Service();
         User user = new User(10, "general");
 
@@ -150,7 +154,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldResetUserRoomWhenRoomIdExists() {
+    public void serviceShouldResetUserRoomWhenRoomIdExists() throws RoomNameTooLongException {
         Service sutService = new Service();
         User user = new User(10, "general");
 

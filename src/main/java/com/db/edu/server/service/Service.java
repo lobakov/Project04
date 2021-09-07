@@ -1,7 +1,10 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.MessageTooLongException;
+import com.db.edu.exception.NicknameSettingException;
+import com.db.edu.exception.RoomNameTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
@@ -22,6 +25,9 @@ import static com.db.edu.server.UsersController.sendMessageToUser;
 import static com.db.edu.server.storage.RoomStorage.*;
 
 public class Service {
+
+    private static final int MAX_NICKNAME_LENGTH = 20;
+    private static final int MAX_ROOMNAME_LENGTH = 20;
 
     /**
      * Saves a message from user to a room file and give it to other users.
@@ -60,9 +66,13 @@ public class Service {
      * @param user
      * @throws DuplicateNicknameException
      */
-    public void setUserNickname(String nickname, User user) throws DuplicateNicknameException {
+    public void setUserNickname(String nickname, User user) throws NicknameSettingException {
         if (isNicknameTaken(nickname)) {
-            throw new DuplicateNicknameException();
+            throw new DuplicateNicknameException("nickname is already taken!");
+        }
+        if (isNicknameTooLong(nickname)) {
+            throw new InvalidNicknameException(
+                    String.format("nickname is too long, should be at most %d characters!", MAX_NICKNAME_LENGTH));
         }
         user.setNickname(nickname);
         sendMessageToUser("Nickname successfully set!", user.getId());
@@ -73,7 +83,10 @@ public class Service {
      * @param roomName
      * @param user
      */
-    public void setUserRoom(String roomName, User user) {
+    public void setUserRoom(String roomName, User user) throws RoomNameTooLongException {
+        if (isRoomNameTooLong(roomName)) {
+            throw new RoomNameTooLongException();
+        }
         if (user.getRoomId() != 0) {
             removeUserFromRoom(user.getId(), user.getRoomId());
         }
@@ -129,5 +142,13 @@ public class Service {
         if (message.length() > 150) {
             throw new MessageTooLongException();
         }
+    }
+
+    boolean isNicknameTooLong(String nickname) {
+        return nickname.length() > MAX_NICKNAME_LENGTH;
+    }
+
+    boolean isRoomNameTooLong(String roomName) {
+        return roomName.length() > MAX_ROOMNAME_LENGTH;
     }
 }
