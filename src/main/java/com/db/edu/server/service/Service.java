@@ -1,6 +1,7 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
@@ -21,7 +22,8 @@ import static com.db.edu.server.storage.RoomStorage.addUserToRoom;
 import static com.db.edu.server.storage.RoomStorage.removeUserFromRoom;
 
 public class Service {
-    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException {
+    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException,
+            MessageTooLongException {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
@@ -99,9 +101,9 @@ public class Service {
         }
     }
 
-    void checkMessageLength(String message) {
+    void checkMessageLength(String message) throws MessageTooLongException {
         if (message.length() > 150) {
-            throw new RuntimeException();
+            throw new MessageTooLongException();
         }
     }
 }
