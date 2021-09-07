@@ -1,6 +1,7 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
@@ -9,6 +10,7 @@ import com.db.edu.server.model.User;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +21,8 @@ import static com.db.edu.server.UsersController.sendMessageToUser;
 import static com.db.edu.server.storage.RoomStorage.*;
 
 public class Service {
-    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException {
+    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException,
+            MessageTooLongException {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
@@ -45,7 +48,8 @@ public class Service {
     }
 
     String formatMessage(String nickname, String message) {
-        return nickname + ": " + message + " (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")";
+        return nickname + ": " + message + " ("
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")";
     }
 
     public void setUserNickname(String nickname, User user) throws DuplicateNicknameException {
@@ -68,15 +72,20 @@ public class Service {
 
     BufferedWriter getWriter(String fileName) {
         BufferedWriter writer = BufferStorage.getBufferedWriterByFileName(fileName);
+        Path filePath = Paths.get(fileName);
         if (writer == null) {
             try {
+                if (!Files.exists(filePath)) {
+                    Files.createDirectories(filePath.getParent());
+                    Files.createFile(filePath);
+                }
                 writer = new BufferedWriter(
                         new OutputStreamWriter(
                                 new BufferedOutputStream(
                                         new FileOutputStream(fileName, true))));
                 BufferStorage.save(fileName, writer);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("File not found", e);
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
             }
         }
         return writer;
@@ -88,9 +97,9 @@ public class Service {
         }
     }
 
-    void checkMessageLength(String message) {
+    void checkMessageLength(String message) throws MessageTooLongException {
         if (message.length() > 150) {
-            throw new RuntimeException();
+            throw new MessageTooLongException();
         }
     }
 }

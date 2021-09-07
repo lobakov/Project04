@@ -1,1 +1,1 @@
-java -cp target/classes com.db.edu.ClientStart
+java -jar build/client.jar-jar-with-dependencies.jar
