@@ -9,6 +9,7 @@ import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -109,7 +110,7 @@ public class Service {
                 writer = new BufferedWriter(
                         new OutputStreamWriter(
                                 new BufferedOutputStream(
-                                        new FileOutputStream(fileName, true))));
+                                        new FileOutputStream(fileName, true)), StandardCharsets.UTF_8));
                 BufferStorage.save(fileName, writer);
             } catch (IOException e) {
                 e.printStackTrace(System.err);

@@ -7,14 +7,10 @@ import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
-
-import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
+import java.nio.charset.StandardCharsets;
 
 public class ClientWorker extends Thread {
     private Socket socket;
@@ -30,8 +26,8 @@ public class ClientWorker extends Thread {
         this.user = user;
         this.running = true;
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
