@@ -1,6 +1,10 @@
 package com.db.edu.server.storage;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -8,11 +12,30 @@ public class RoomStorage {
     static private Map<String, Integer> namesToIds = new HashMap<>();
     static private Map<Integer, Set<Integer>> idsToMembers = new HashMap<>();
     static private AtomicInteger roomIds = new AtomicInteger(1);
+    static private final String ROOM_PATH = "src/main/resources/room/";
 
-    public static Set<Integer> getUsersById(int roomId) {
-        if (idsToMembers.get(roomId) == null) {
-            throw new RuntimeException("Room doesn't exist");
+    /**
+     * Upload all the names of rooms from the rooms files directory to the map.
+     */
+    public static void loadAllRooms() {
+        Path path = Paths.get(ROOM_PATH);
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        File folder = new File(ROOM_PATH);
+        for (final File file : Objects.requireNonNull(folder.listFiles())) {
+            String roomName = file.getName();
+            roomName = roomName.substring(0, roomName.length() - 4);
+            Integer roomId = namesToIds.computeIfAbsent(roomName, s -> roomIds.getAndIncrement());
+            idsToMembers.putIfAbsent(roomId, new HashSet<>());
+        }
+    }
+
+    public static Set<Integer> getUsersByRoomId(int roomId) {
         return idsToMembers.get(roomId);
     }
 
@@ -23,18 +46,8 @@ public class RoomStorage {
         return roomId;
     }
 
-    public static void loadAllRooms() {
-        File folder = new File("src/main/resources/room");
-        for (final File file : Objects.requireNonNull(folder.listFiles())) {
-            String roomName = file.getName();
-            roomName = roomName.substring(0, roomName.length() - 4);
-            Integer roomId = namesToIds.computeIfAbsent(roomName, s -> roomIds.getAndIncrement());
-            idsToMembers.putIfAbsent(roomId, new HashSet<>());
-        }
-    }
-
     public static String getFileName(String roomName) {
-        return "src/main/resources/room/" + roomName + ".txt";
+        return ROOM_PATH + roomName + ".txt";
     }
 
     public static void removeUserFromRoom(int userId, int roomId) {
