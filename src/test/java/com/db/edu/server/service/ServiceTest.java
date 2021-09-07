@@ -7,14 +7,10 @@ import com.db.edu.server.model.User;
 import com.db.edu.server.worker.ClientWorker;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.nio.file.Files.readString;
+import static com.db.edu.server.storage.RoomStorage.getFileName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -77,7 +73,7 @@ public class ServiceTest {
     @Test
     public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws DuplicateNicknameException {
         Service sutService = new Service();
-        User user = new User(10);
+        User user = new User(10, "general");
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
 
         UsersController.addUserConnection(10, clientWorkerStub);
@@ -90,7 +86,7 @@ public class ServiceTest {
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
         Service sutService = new Service();
 
-        assertEquals("src/main/resources/room228.txt", sutService.getFileName(228));
+        assertEquals("src/main/resources/228.txt", getFileName("228"));
     }
 
     @Test

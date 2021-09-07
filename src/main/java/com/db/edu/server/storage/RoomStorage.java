@@ -1,9 +1,7 @@
 package com.db.edu.server.storage;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoomStorage {
@@ -23,6 +21,20 @@ public class RoomStorage {
         idsToMembers.putIfAbsent(roomId, new HashSet<>());
         idsToMembers.get(roomId).add(userId);
         return roomId;
+    }
+
+    public static void loadAllRooms() {
+        File folder = new File("src/main/resources/room");
+        for (final File file : Objects.requireNonNull(folder.listFiles())) {
+            String roomName = file.getName();
+            roomName = roomName.substring(0, roomName.length() - 4);
+            Integer roomId = namesToIds.computeIfAbsent(roomName, s -> roomIds.getAndIncrement());
+            idsToMembers.putIfAbsent(roomId, new HashSet<>());
+        }
+    }
+
+    public static String getFileName(String roomName) {
+        return "src/main/resources/room/" + roomName + ".txt";
     }
 
     public static void removeUserFromRoom(int userId, int roomId) {

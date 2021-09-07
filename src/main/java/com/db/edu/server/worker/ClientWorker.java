@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
+
 public class ClientWorker extends Thread {
     private Socket socket;
     private Service userService;
@@ -97,6 +99,7 @@ public class ClientWorker extends Thread {
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 
+        loadAllRooms();
         switch (commandType) {
             case "/hist":
                 if (tokens.length > 1) {

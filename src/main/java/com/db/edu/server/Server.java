@@ -17,7 +17,7 @@ public class Server {
             while (true) {
                 Socket userSocket = listener.accept();
                 int id = ids.getAndIncrement();
-                User user = new User(id);
+                User user = new User(id, "general");
                 ClientWorker worker = new ClientWorker(userSocket, user, userService);
                 UsersController.addUserConnection(id, worker);
                 userService.setUserRoom("general", user);
