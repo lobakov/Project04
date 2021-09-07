@@ -142,6 +142,6 @@ public class ClientWorker extends Thread {
     }
 
     private String extractMessage(String command) {
-        return command.substring(command.indexOf(" ") + 1);
+        return command.substring(command.indexOf(' ') + 1);
     }
 }

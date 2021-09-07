@@ -9,10 +9,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoomStorage {
-    static private Map<String, Integer> namesToIds = new HashMap<>();
-    static private Map<Integer, Set<Integer>> idsToMembers = new HashMap<>();
-    static private AtomicInteger roomIds = new AtomicInteger(1);
-    static private String roomFolder = "src/main/resources/room/";
+    private static Map<String, Integer> namesToIds = new HashMap<>();
+    private static Map<Integer, Set<Integer>> idsToMembers = new HashMap<>();
+    private static AtomicInteger roomIds = new AtomicInteger(1);
+    private static String roomFolder = "src/main/resources/room/";
+
+    private RoomStorage() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * Upload all the names of rooms from the rooms files directory to the map.

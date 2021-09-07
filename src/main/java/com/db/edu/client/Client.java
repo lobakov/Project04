@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class Client {
-    private final String HOST;
-    private final int PORT;
+    private final String host;
+    private final int port;
 
     /**
      * Configure HOST and PORT for client.
@@ -16,8 +16,8 @@ public class Client {
      * @param port (int)
      */
     public Client(String host, int port) {
-        HOST = host;
-        PORT = port;
+        this.host = host;
+        this.port = port;
     }
 
     /**
@@ -25,7 +25,7 @@ public class Client {
      * Settle up isolated thread for message receiving.
      */
     public void connect() {
-        try (Socket connection = new Socket(HOST, PORT);
+        try (Socket connection = new Socket(host, port);
              PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
 
@@ -43,8 +43,8 @@ public class Client {
             receiver.setStop();
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

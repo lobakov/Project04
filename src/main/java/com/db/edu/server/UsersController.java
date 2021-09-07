@@ -9,6 +9,10 @@ import java.util.Set;
 public class UsersController {
     private static HashMap<Integer, ClientWorker> workerConnections = new HashMap<>();
 
+    private UsersController() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void sendMessageToUser(String message, Integer id) {
         workerConnections.get(id).sendMessage(message);
     }

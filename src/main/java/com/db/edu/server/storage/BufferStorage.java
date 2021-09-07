@@ -7,6 +7,10 @@ import java.util.Map;
 public class BufferStorage {
     static Map<String, BufferedWriter> writers = new HashMap<>();
 
+    private BufferStorage() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static BufferedWriter getBufferedWriterByFileName(String fileName) {
         return writers.get(fileName);
     }

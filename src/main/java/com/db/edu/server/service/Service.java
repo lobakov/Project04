@@ -32,7 +32,7 @@ public class Service {
      * @throws MessageTooLongException
      */
     public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException,
-            MessageTooLongException {
+            MessageTooLongException, IOException {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
@@ -83,14 +83,10 @@ public class Service {
         sendMessageToUser("Joined #" + roomName + "!", user.getId());
     }
 
-    void saveMessage(BufferedWriter writer, String formattedMessage) {
-        try {
-            writer.write(formattedMessage);
-            writer.newLine();
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't save message to file", e);
-        }
+    void saveMessage(BufferedWriter writer, String formattedMessage) throws IOException {
+        writer.write(formattedMessage);
+        writer.newLine();
+        writer.flush();
     }
 
     String formatMessage(String nickname, String message) {
