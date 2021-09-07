@@ -26,7 +26,7 @@ public class Server {
                 userService.setUserRoom("general", user);
                 worker.start();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace(System.err);
         }
     }

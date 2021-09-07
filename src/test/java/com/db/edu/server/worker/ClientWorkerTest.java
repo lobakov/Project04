@@ -2,7 +2,10 @@ package com.db.edu.server.worker;
 
 import com.db.edu.exception.CommandProcessException;
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.MessageTooLongException;
+import com.db.edu.exception.NicknameSettingException;
+import com.db.edu.exception.RoomNameTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
@@ -75,7 +78,7 @@ public class ClientWorkerTest {
         String command = "/snd" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Unknown command"));
+        assertThat(outputStream.toString(), containsString("message is empty"));
         verify(serviceStub, never()).saveAndSendMessage("", userStub);
     }
 
@@ -111,12 +114,12 @@ public class ClientWorkerTest {
         String command = "/hist 123" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Unknown command"));
+        assertThat(outputStream.toString(), containsString("hist takes no arguments"));
         verify(serviceStub, never()).getMessagesFromRoom(userStub);
     }
 
     @Test
-    public void shouldSetNickname() throws IOException, DuplicateNicknameException, InterruptedException {
+    public void shouldSetNickname() throws IOException, NicknameSettingException, InterruptedException {
         String command = "/chid 123" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
@@ -124,35 +127,46 @@ public class ClientWorkerTest {
     }
 
     @Test
-    public void shouldNotSetEmptyNickname() throws IOException, DuplicateNicknameException, InterruptedException {
+    public void shouldNotSetEmptyNickname() throws IOException, NicknameSettingException, InterruptedException {
         String command = "/chid" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Unknown command"));
+        assertThat(outputStream.toString(), containsString("nickname is empty"));
         verify(serviceStub, never()).setUserNickname("", userStub);
     }
 
     @Test
-    public void shouldNotSetNicknameWithWhitespaces() throws IOException, DuplicateNicknameException,
+    public void shouldNotSetNicknameWithWhitespaces() throws IOException, NicknameSettingException,
             InterruptedException {
         String command = "/chid 123 123" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Your nickname contains a whitespace character"));
+        assertThat(outputStream.toString(), containsString("nickname contains a whitespace character"));
         verify(serviceStub, never()).setUserNickname("123 123", userStub);
     }
 
     @Test
-    public void shouldHandleDuplicateNicknames() throws IOException, DuplicateNicknameException, InterruptedException {
-        doThrow(DuplicateNicknameException.class).when(serviceStub).setUserNickname("123", userStub);
+    public void shouldHandleDuplicateNicknames() throws IOException, NicknameSettingException, InterruptedException {
+        doThrow(new DuplicateNicknameException("nickname is already taken!"))
+                .when(serviceStub).setUserNickname("123", userStub);
         String command = "/chid 123" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Your nickname is already taken"));
+        assertThat(outputStream.toString(), containsString("nickname is already taken"));
     }
 
     @Test
-    public void shouldChangeRoom() throws IOException, InterruptedException {
+    public void shouldHandleTooLongNicknames() throws IOException, NicknameSettingException, InterruptedException {
+        doThrow(new InvalidNicknameException("nickname is too long"))
+                .when(serviceStub).setUserNickname("123", userStub);
+        String command = "/chid 123" + System.lineSeparator();
+        writer.write(command.getBytes());
+        Thread.sleep(2000);
+        assertThat(outputStream.toString(), containsString("nickname is too long"));
+    }
+
+    @Test
+    public void shouldChangeRoom() throws IOException, InterruptedException, RoomNameTooLongException {
         String command = "/chroom test" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
@@ -160,12 +174,24 @@ public class ClientWorkerTest {
     }
 
     @Test
-    public void shouldNotChangeToRoomWithWhitespaces() throws IOException, InterruptedException {
+    public void shouldNotChangeToRoomWithWhitespaces() throws IOException, InterruptedException,
+            RoomNameTooLongException {
         String command = "/chroom test test" + System.lineSeparator();
         writer.write(command.getBytes());
         Thread.sleep(2000);
-        assertThat(outputStream.toString(), containsString("Unknown command"));
+        assertThat(outputStream.toString(), containsString("room name contains a whitespace character"));
         verify(serviceStub, never()).setUserRoom("test test", userStub);
+    }
+
+    @Test
+    public void shouldHandleTooLongRoomName() throws IOException, InterruptedException,
+            RoomNameTooLongException {
+        doThrow(new RoomNameTooLongException())
+                .when(serviceStub).setUserRoom("test", userStub);
+        String command = "/chroom test" + System.lineSeparator();
+        writer.write(command.getBytes());
+        Thread.sleep(2000);
+        assertThat(outputStream.toString(), containsString("room name is too long"));
     }
 
     @Test
