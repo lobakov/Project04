@@ -1,6 +1,7 @@
 package com.db.edu.server.service;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
@@ -17,22 +18,22 @@ import java.util.List;
 
 import static com.db.edu.server.UsersController.isNicknameTaken;
 import static com.db.edu.server.UsersController.sendMessageToUser;
-import static com.db.edu.server.storage.RoomStorage.addUserToRoom;
-import static com.db.edu.server.storage.RoomStorage.removeUserFromRoom;
+import static com.db.edu.server.storage.RoomStorage.*;
 
 public class Service {
-    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException {
+    public void saveAndSendMessage(String message, User user) throws UserNotIdentifiedException,
+            MessageTooLongException {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
-        BufferedWriter writer = getWriter(getFileName(user.getRoomId()));
+        BufferedWriter writer = getWriter(getFileName(user.getRoomName()));
         saveMessage(writer, formattedMessage);
         UsersController.sendMessageToAllUsers(formattedMessage, RoomStorage.getUsersById(user.getRoomId()));
     }
 
     public void getMessagesFromRoom(User user) throws UserNotIdentifiedException, IOException {
         checkUserIdentified(user);
-        List<String> lines = Files.readAllLines(Paths.get(getFileName(user.getRoomId())));
+        List<String> lines = Files.readAllLines(Paths.get(getFileName(user.getRoomName())));
         UsersController.sendAllMessagesToUser(lines, user.getId());
     }
 
@@ -65,11 +66,8 @@ public class Service {
         }
         Integer roomId = addUserToRoom(user.getId(), roomName);
         user.setRoomId(roomId);
+        user.setRoomName(roomName);
         sendMessageToUser("Joined #" + roomName + "!", user.getId());
-    }
-
-    String getFileName(int roomId) {
-        return "src/main/resources/room" + roomId + ".txt";
     }
 
     BufferedWriter getWriter(String fileName) {
@@ -84,7 +82,7 @@ public class Service {
                 writer = new BufferedWriter(
                         new OutputStreamWriter(
                                 new BufferedOutputStream(
-                                        new FileOutputStream(fileName))));
+                                        new FileOutputStream(fileName, true))));
                 BufferStorage.save(fileName, writer);
             } catch (IOException e) {
                 e.printStackTrace(System.err);
@@ -99,9 +97,9 @@ public class Service {
         }
     }
 
-    void checkMessageLength(String message) {
+    void checkMessageLength(String message) throws MessageTooLongException {
         if (message.length() > 150) {
-            throw new RuntimeException();
+            throw new MessageTooLongException();
         }
     }
 }

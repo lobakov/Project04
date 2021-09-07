@@ -4,9 +4,11 @@ public class User {
     private final int id;
     private String nickname;
     private int roomId;
+    private String roomName;
 
-    public User(int id) {
+    public User(int id, String name) {
         this.id = id;
+        this.roomName = name;
     }
 
     public String getNickname() {
@@ -27,5 +29,13 @@ public class User {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 }

@@ -5,19 +5,13 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.UsersController;
 import com.db.edu.server.model.User;
 import com.db.edu.server.worker.ClientWorker;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
-import javax.swing.text.Utilities;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.db.edu.server.storage.RoomStorage.getFileName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -38,11 +32,11 @@ public class ServiceTest {
 
         User userStub = mock(User.class);
 
-        assertThrows(RuntimeException.class, () -> sutService.saveAndSendMessage(tooLongMessage, userStub));
+        assertThrows(MessageTooLongException.class, () -> sutService.saveAndSendMessage(tooLongMessage, userStub));
     }
 
     @Test
-    public void serviceShouldAcceptMessageWhenMessageLengthIsAcceptable() {
+    public void serviceShouldAcceptMessageWhenMessageLengthIsAcceptable() throws MessageTooLongException {
         Service sutService = new Service();
         String acceptableMessage = "To be, or not to be, that is the question:" +
                                 "Whether 'tis nobler in the mind to suffer";
@@ -102,7 +96,7 @@ public class ServiceTest {
     @Test
     public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws DuplicateNicknameException {
         Service sutService = new Service();
-        User user = new User(10);
+        User user = new User(10, "general");
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
 
         when(UsersController.isNicknameTaken("Musk")).thenReturn(false);
@@ -117,7 +111,7 @@ public class ServiceTest {
     public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
         Service sutService = new Service();
 
-        assertEquals("src/main/resources/room228.txt", sutService.getFileName(228));
+        assertEquals("src/main/resources/228.txt", getFileName("228"));
     }
 
     @Test

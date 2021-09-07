@@ -1,6 +1,7 @@
 package com.db.edu.server.worker;
 
 import com.db.edu.exception.DuplicateNicknameException;
+import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.server.model.User;
 import com.db.edu.exception.InvalidNicknameException;
 import com.db.edu.exception.UnknownCommandException;
@@ -13,6 +14,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+
+import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
 
 public class ClientWorker extends Thread {
     private Socket socket;
@@ -58,6 +61,8 @@ public class ClientWorker extends Thread {
                         "without any whitespace characters.");
             } catch (DuplicateNicknameException e) {
                 sendMessage("Your nickname is already taken! Please choose another one.");
+            } catch (MessageTooLongException e) {
+                sendMessage("Your message is too long! Our chat only supports messages up to 150 symbols.");
             }
         }
         try {
@@ -93,10 +98,12 @@ public class ClientWorker extends Thread {
     }
 
     private void processCommand(String command) throws UserNotIdentifiedException,
-            UnknownCommandException, InvalidNicknameException, DuplicateNicknameException, IOException {
+            UnknownCommandException, InvalidNicknameException, DuplicateNicknameException,
+            MessageTooLongException, IOException {
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 
+        loadAllRooms();
         switch (commandType) {
             case "/hist":
                 if (tokens.length > 1) {
