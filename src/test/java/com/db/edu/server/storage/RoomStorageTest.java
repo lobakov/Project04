@@ -47,6 +47,6 @@ class RoomStorageTest {
 
     @Test
     public void shouldGetFileNameCorrectlyWhenGetsDiscussionId() {
-        assertEquals("src/test/resources/room/228.txt", rooms.getFileName("228"));
+        assertEquals("src/test/resources/room/228.txt", roomPath + rooms.getFileName("228"));
     }
 }

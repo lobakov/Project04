@@ -49,7 +49,7 @@
                             <outputDirectory>build</outputDirectory>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.db.edu.server.Server</mainClass>
+                                    <mainClass>com.db.edu.ServerStart</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
