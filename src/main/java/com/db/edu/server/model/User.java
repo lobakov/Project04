@@ -1,10 +1,10 @@
 package com.db.edu.server.model;
 
 public class User {
-    private final int id;
-    private String nickname;
-    private int roomId;
-    private String roomName;
+    final int id;
+    String nickname;
+    int roomId;
+    String roomName;
 
     public User(int id, String roomName) {
         this.id = id;
