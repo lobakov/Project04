@@ -18,7 +18,7 @@ public class ServerStart {
                     String s = scanner.next();
                     if (s.equals("/exit")) {
                         server.interrupt();
-                        System.out.println("Server shut down.");
+                        System.err.println("Server shut down.");
                         return;
                     }
                 }

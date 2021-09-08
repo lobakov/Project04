@@ -35,9 +35,8 @@ class MessageReceiver extends Thread {
 
         } catch (SocketException socketException) {
             System.err.println("Can't connect to server");
-            try {
-                Socket socket = new Socket("localhost", 5000);
-                final PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+            try (Socket socket = new Socket("localhost", 5000);
+                 final PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true)) {
                 out.println("Restart please");
             } catch (IOException e) {
                 e.printStackTrace();
