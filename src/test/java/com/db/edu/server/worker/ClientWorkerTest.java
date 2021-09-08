@@ -10,6 +10,7 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -55,7 +56,7 @@ public class ClientWorkerTest {
 
     @Test
     public void shouldSendGreeting() throws InterruptedException {
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("Welcome to the chat!"));
     }
 
@@ -63,7 +64,7 @@ public class ClientWorkerTest {
     public void shouldSendMessage() throws IOException, CommandProcessException, InterruptedException {
         String command = "/snd test_message" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         verify(serviceStub).saveAndSendMessage("test_message", userStub);
     }
 
@@ -71,7 +72,7 @@ public class ClientWorkerTest {
     public void shouldNotSendEmptyMessage() throws IOException, InterruptedException, CommandProcessException {
         String command = "/snd" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("message is empty"));
         verify(serviceStub, never()).saveAndSendMessage("", userStub);
     }
@@ -81,7 +82,7 @@ public class ClientWorkerTest {
         doThrow(UserNotIdentifiedException.class).when(serviceStub).saveAndSendMessage("123", userStub);
         String command = "/snd 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("You have not set your nickname yet"));
     }
 
@@ -90,7 +91,7 @@ public class ClientWorkerTest {
         doThrow(MessageTooLongException.class).when(serviceStub).saveAndSendMessage("123", userStub);
         String command = "/snd 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("Your message is too long"));
     }
 
@@ -98,7 +99,7 @@ public class ClientWorkerTest {
     public void shouldRequestHistory() throws IOException, CommandProcessException, InterruptedException {
         String command = "/hist" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         verify(serviceStub).getMessagesFromRoom(userStub);
     }
 
@@ -107,7 +108,7 @@ public class ClientWorkerTest {
             InterruptedException {
         String command = "/hist 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("hist takes no arguments"));
         verify(serviceStub, never()).getMessagesFromRoom(userStub);
     }
@@ -116,7 +117,7 @@ public class ClientWorkerTest {
     public void shouldSetNickname() throws IOException, NicknameSettingException, InterruptedException {
         String command = "/chid 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         verify(serviceStub).setUserNickname("123", userStub);
     }
 
@@ -124,7 +125,7 @@ public class ClientWorkerTest {
     public void shouldNotSetEmptyNickname() throws IOException, NicknameSettingException, InterruptedException {
         String command = "/chid" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("nickname is empty"));
         verify(serviceStub, never()).setUserNickname("", userStub);
     }
@@ -134,7 +135,7 @@ public class ClientWorkerTest {
             InterruptedException {
         String command = "/chid 123 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("nickname contains a whitespace character"));
         verify(serviceStub, never()).setUserNickname("123 123", userStub);
     }
@@ -145,7 +146,7 @@ public class ClientWorkerTest {
                 .when(serviceStub).setUserNickname("123", userStub);
         String command = "/chid 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("nickname is already taken"));
     }
 
@@ -155,7 +156,7 @@ public class ClientWorkerTest {
                 .when(serviceStub).setUserNickname("123", userStub);
         String command = "/chid 123" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("nickname is too long"));
     }
 
@@ -163,7 +164,7 @@ public class ClientWorkerTest {
     public void shouldChangeRoom() throws IOException, InterruptedException, RoomNameTooLongException {
         String command = "/chroom test" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         verify(serviceStub).setUserRoom("test", userStub);
     }
 
@@ -172,7 +173,7 @@ public class ClientWorkerTest {
             RoomNameTooLongException {
         String command = "/chroom test test" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("room name contains a whitespace character"));
         verify(serviceStub, never()).setUserRoom("test test", userStub);
     }
@@ -184,7 +185,7 @@ public class ClientWorkerTest {
                 .when(serviceStub).setUserRoom("test", userStub);
         String command = "/chroom test" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("room name is too long"));
     }
 
@@ -192,7 +193,7 @@ public class ClientWorkerTest {
     public void shouldCallHelp() throws IOException, InterruptedException {
         String command = "/help" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("Available commands"));
     }
 
@@ -200,7 +201,7 @@ public class ClientWorkerTest {
     public void shouldNotProcessUnknownCommands() throws IOException, InterruptedException {
         String command = "random" + System.lineSeparator();
         writer.write(command.getBytes());
-        Thread.sleep(2000);
+        Thread.sleep(2500);
         assertThat(outputStream.toString(), containsString("Unknown command"));
     }
 }

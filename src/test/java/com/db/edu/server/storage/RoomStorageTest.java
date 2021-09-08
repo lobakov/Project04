@@ -2,6 +2,7 @@ package com.db.edu.server.storage;
 
 import org.junit.jupiter.api.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,8 +24,13 @@ class RoomStorageTest {
     @Test
     void mapsMustGenerateWhenLoadAllRooms() throws IOException {
         Files.createDirectories(Paths.get(roomPath));
-        Files.createFile(Paths.get(roomPath + "/room1.txt"));
-        Files.createFile(Paths.get(roomPath + "/room2.txt"));
+        if(!Files.exists(Paths.get(roomPath + "/room1.txt"))){
+            Files.createFile(Paths.get(roomPath + "/room1.txt"));
+        }
+
+        if(!Files.exists(Paths.get(roomPath + "/room2.txt"))){
+            Files.createFile(Paths.get(roomPath + "/room2.txt"));
+        }
 
         rooms.loadAllRooms(rooms.getRoomFolder("src/test/resources/room/"));
 
@@ -46,8 +52,7 @@ class RoomStorageTest {
     }
 
     @Test
-    @Disabled
     public void shouldGetFileNameCorrectlyWhenGetsDiscussionId() {
-        assertEquals("src/test/resources/room/228.txt", rooms.getFileName("228"));
+        assertEquals("src/test/resources/room/228.txt", roomPath + rooms.getFileName("228"));
     }
 }

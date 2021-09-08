@@ -56,9 +56,9 @@ public class ServiceTest {
     @Test
     public void shouldNotSendTooLongMessage() {
         String tooLongMessage = "To be, or not to be, that is the question:" +
-                                "Whether 'tis nobler in the mind to suffer" +
-                                "The slings and arrows of outrageous fortune, " +
-                                "Or to take arms against a sea of troubles";
+                "Whether 'tis nobler in the mind to suffer" +
+                "The slings and arrows of outrageous fortune, " +
+                "Or to take arms against a sea of troubles";
 
         User userStub = mock(User.class);
 
@@ -86,11 +86,12 @@ public class ServiceTest {
     public void shouldFormatSentMessage() throws CommandProcessException, IOException {
         String message = "123";
         when(userStub.getNickname()).thenReturn("Musk");
+        when(roomsStub.getFileName(any())).thenReturn("general.txt");
         String curYear = String.valueOf(LocalDateTime.now().getYear());
 
         sutService.saveAndSendMessage(message, userStub);
         verify(controllerStub).sendMessageToAllUsers(argThat(s ->
-            s.contains("Musk") && s.contains(message) && s.contains(curYear)
+                s.contains("Musk") && s.contains(message) && s.contains(curYear)
         ), anySet());
     }
 
@@ -135,28 +136,27 @@ public class ServiceTest {
         assertFalse(sutService.isRoomNameTooLong("shortRoomName"));
     }
 
-    /* integration test
+
     @Test
     public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws NicknameSettingException {
-        Service sutService = new Service();
+        Service sutService = new Service(buffersStub, roomsStub, controllerStub);
         User user = new User(10, "general");
         ClientWorker clientWorkerStub = mock(ClientWorker.class);
 
-        when(UsersController.isNicknameTaken("Musk")).thenReturn(false);
+        when(controllerStub.isNicknameTaken("Musk")).thenReturn(false);
         when(clientWorkerStub.getUser()).thenReturn(user);
-        UsersController.addUserConnection(10, clientWorkerStub);
+        controllerStub.addUserConnection(10, clientWorkerStub);
+        doNothing().when(controllerStub).sendMessageToUser(anyString(), anyInt());
         sutService.setUserNickname("Musk", user);
 
         assertEquals("Musk", user.getNickname());
     }
-    */
 
     @Test
-    @Disabled
     public void shouldSetUserRoomIdAfterJoiningRoom() throws RoomNameTooLongException {
         sutService.setUserRoom("first room", userStub);
 
-        verify(userStub).setRoomId(1);
+        verify(userStub,times(1)).setRoomId(anyInt());
     }
 
     /* integration test

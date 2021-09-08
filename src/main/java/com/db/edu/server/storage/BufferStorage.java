@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BufferStorage {
-    private Map<String, BufferedWriter> writers;
+    private final Map<String, BufferedWriter> writers;
 
     public BufferStorage() {
         writers = new ConcurrentHashMap<>();
@@ -19,6 +19,10 @@ public class BufferStorage {
 
     public void save(String fileName, BufferedWriter writer) {
         writers.put(fileName, writer);
+    }
+
+    public Map<String, BufferedWriter> getWriters(){
+        return writers;
     }
 
     public void closeAllBuffers() {
