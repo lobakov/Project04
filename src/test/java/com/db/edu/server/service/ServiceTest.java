@@ -142,6 +142,7 @@ public class ServiceTest {
         when(controllerStub.isNicknameTaken("Musk")).thenReturn(false);
         when(clientWorkerStub.getUser()).thenReturn(user);
         controllerStub.addUserConnection(10, clientWorkerStub);
+        doNothing().when(controllerStub).sendMessageToUser(anyString(), anyInt());
         sutService.setUserNickname("Musk", user);
 
         assertEquals("Musk", user.getNickname());
