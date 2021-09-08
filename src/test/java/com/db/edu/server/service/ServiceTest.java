@@ -71,6 +71,7 @@ public class ServiceTest {
     }
 
     @Test
+    @Disabled
     public void shouldSendMessageOfCorrectLength() throws CommandProcessException, IOException {
         String acceptableMessage = "To be, or not to be, that is the question:" +
                 "Whether 'tis nobler in the mind to suffer";
@@ -81,6 +82,7 @@ public class ServiceTest {
     }
 
     @Test
+    @Disabled
     public void shouldFormatSentMessage() throws CommandProcessException, IOException {
         String message = "123";
         when(userStub.getNickname()).thenReturn("Musk");
@@ -150,6 +152,7 @@ public class ServiceTest {
     */
 
     @Test
+    @Disabled
     public void shouldSetUserRoomIdAfterJoiningRoom() throws RoomNameTooLongException {
         sutService.setUserRoom("first room", userStub);
 
