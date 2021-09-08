@@ -12,12 +12,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.db.edu.server.storage.RoomStorage.getRoomFolder;
 import static com.db.edu.server.storage.RoomStorage.loadAllRooms;
 
-public class Server {
-    public static void main(String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            UsersController.deleteAllUsers();
-            BufferStorage.closeAllBuffers();
-        }));
+public class Server extends Thread {
+
+    @Override
+    public void interrupt() {
+        UsersController.deleteAllUsers();
+        BufferStorage.closeAllBuffers();
+        super.interrupt();
+    }
+
+    @Override
+    public void run() {
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            UsersController.deleteAllUsers();
+//            BufferStorage.closeAllBuffers();
+//        }));
         AtomicInteger ids = new AtomicInteger();
         Service userService = new Service();
         loadAllRooms(getRoomFolder("src/main/resources/room/"));

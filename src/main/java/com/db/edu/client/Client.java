@@ -1,12 +1,14 @@
 package com.db.edu.client;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class Client {
     private final String host;
     private final int port;
+    private boolean stop;
 
     /**
      * Configure HOST and PORT for client.
@@ -26,17 +28,31 @@ public class Client {
         try (final Socket connection = new Socket(host, port);
              final PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8), true);
              final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-             final BufferedReader sc = new BufferedReader(new InputStreamReader(System.in))) {
+             final BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
+             final ServerSocket serverSocket = new ServerSocket(5000)) {
 
             String str;
 
             MessageReceiver receiver = new MessageReceiver(in);
             receiver.start();
 
+            Thread listenerThread = new Thread(() -> {
+                try (final Socket socket = serverSocket.accept();
+                     final BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
+                    String commandFromReceiver = input.readLine();
+                    System.out.println(commandFromReceiver);
+                    stop = true;
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+            });
+            listenerThread.start();
+
             do {
                 str = sc.readLine();
                 out.println(str);
-            } while (!str.equals("exit"));
+            } while (!str.equals("exit") && !stop);
 
             receiver.setStop();
         } catch (IOException ioException) {
