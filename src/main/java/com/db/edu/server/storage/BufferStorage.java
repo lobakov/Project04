@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BufferStorage {
-    private Map<String, BufferedWriter> writers;
+    Map<String, BufferedWriter> writers;
 
     public BufferStorage() {
         writers = new ConcurrentHashMap<>();
