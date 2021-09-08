@@ -21,8 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import static java.nio.file.Files.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ServiceTest {
@@ -112,6 +111,26 @@ public class ServiceTest {
         when(userStub.getNickname()).thenReturn("Musk");
 
         sutService.checkUserIdentified(userStub);
+    }
+
+    @Test
+    public void serviceShouldNotPassNicknameWhenNicknameLengthIsTooLong() {
+        assertTrue(sutService.isNicknameTooLong("nicknameThatIsMoreThan20Chars"));
+    }
+
+    @Test
+    public void serviceShouldPassNicknameWhenNicknameLengthIsLessThan20Chars() {
+        assertFalse(sutService.isNicknameTooLong("shortNick"));
+    }
+
+    @Test
+    public void serviceShouldNotPassRoomNameWhenRoomNameLengthIsTooLong() {
+        assertTrue(sutService.isRoomNameTooLong("roomNameThatIsMoreThan20Chars"));
+    }
+
+    @Test
+    public void serviceShouldPassRoomNameWhenRoomNameLengthIsLessThan20Chars() {
+        assertFalse(sutService.isRoomNameTooLong("shortRoomName"));
     }
 
     /* integration test
