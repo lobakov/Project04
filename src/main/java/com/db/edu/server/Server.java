@@ -1,11 +1,13 @@
 package com.db.edu.server;
 
+import com.db.edu.exception.RoomNameTooLongException;
 import com.db.edu.server.service.Service;
 import com.db.edu.server.storage.BufferStorage;
 import com.db.edu.server.storage.RoomStorage;
 import com.db.edu.server.worker.ClientWorker;
 import com.db.edu.server.model.User;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,8 +40,10 @@ public class Server extends Thread{
                 controller.addUserConnection(id, worker);
                 userService.setUserRoom("general", user);
             }
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
+        } catch (RoomNameTooLongException e) {
+            System.err.println("Room name too long");
+        } catch (IOException ioException) {
+            System.err.println("Can't listen");
         }
     }
 }
