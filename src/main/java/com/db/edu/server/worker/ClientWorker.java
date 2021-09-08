@@ -81,14 +81,13 @@ public class ClientWorker extends Thread {
             out.close();
             in.close();
             socket.close();
-            RoomStorage.removeUserFromRoom(user.getId(), user.getRoomId());
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
     }
 
     private void disconnectUser() {
-        UsersController.disconnectUser(user.getId());
+        userService.disconnectUser(user);
     }
 
     private void sendGreeting() {
@@ -108,6 +107,10 @@ public class ClientWorker extends Thread {
     }
 
     private void processCommand(String command) throws CommandProcessException, IOException {
+        if (command == null) {
+            disconnectUser();
+            return;
+        }
         String[] tokens = command.trim().split("\\s+");
         String commandType = tokens[0];
 

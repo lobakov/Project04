@@ -1,5 +1,6 @@
 package com.db.edu.server.service;
 
+import com.db.edu.exception.CommandProcessException;
 import com.db.edu.exception.DuplicateNicknameException;
 import com.db.edu.exception.MessageTooLongException;
 import com.db.edu.exception.NicknameSettingException;
@@ -17,12 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-import static com.db.edu.server.storage.RoomStorage.getFileName;
-import static com.db.edu.server.storage.RoomStorage.reset;
 import static java.nio.file.Files.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ServiceTest {
@@ -33,10 +32,20 @@ public class ServiceTest {
 
     private final String filename = "test.txt";
     private File file;
+    private Service sutService;
+    private BufferStorage buffersStub;
+    private RoomStorage roomsStub;
+    private UsersController controllerStub;
+    private User userStub;
 
     @BeforeEach
     public void setUp() {
         file = new File(filename);
+        buffersStub = mock(BufferStorage.class);
+        roomsStub = mock(RoomStorage.class);
+        controllerStub = mock(UsersController.class);
+        userStub = mock(User.class);
+        sutService = new Service(buffersStub, roomsStub, controllerStub);
     }
 
     @AfterEach
@@ -45,8 +54,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldThrowRuntimeExceptionWhenMessageIsTooLong() {
-        Service sutService = new Service();
+    public void shouldNotSendTooLongMessage() {
         String tooLongMessage = "To be, or not to be, that is the question:" +
                                 "Whether 'tis nobler in the mind to suffer" +
                                 "The slings and arrows of outrageous fortune, " +
@@ -58,63 +66,74 @@ public class ServiceTest {
     }
 
     @Test
-    public void serviceShouldAcceptMessageWhenMessageLengthIsAcceptable() throws MessageTooLongException {
-        Service sutService = new Service();
+    public void shouldNotSendMessageFromNotIdentifiedUsers() {
+        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
+    }
+
+    @Test
+    public void shouldSendMessageOfCorrectLength() throws CommandProcessException, IOException {
         String acceptableMessage = "To be, or not to be, that is the question:" +
-                                "Whether 'tis nobler in the mind to suffer";
+                "Whether 'tis nobler in the mind to suffer";
+        when(userStub.getNickname()).thenReturn("Musk");
 
-        sutService.checkMessageLength(acceptableMessage);
+        sutService.saveAndSendMessage(acceptableMessage, userStub);
+        verify(controllerStub).sendMessageToAllUsers(any(String.class), anySet());
     }
 
     @Test
-    public void serviceShouldThrowUserNotIdentifiedExceptionWhenFileDoesNotExist() {
-        Service sutService = new Service();
+    public void shouldFormatSentMessage() throws CommandProcessException, IOException {
+        String message = "123";
+        when(userStub.getNickname()).thenReturn("Musk");
+        String curYear = String.valueOf(LocalDateTime.now().getYear());
 
-        User userStub = mock(User.class);
-
-        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
+        sutService.saveAndSendMessage(message, userStub);
+        verify(controllerStub).sendMessageToAllUsers(argThat(s ->
+            s.contains("Musk") && s.contains(message) && s.contains(curYear)
+        ), anySet());
     }
 
     @Test
-    public void serviceShouldThrowUserNotIdentifiedExceptionWhenUserNicknameDoesNotExist() {
-        Service sutService = new Service();
-
-        User userStub = mock(User.class);
-        when(userStub.getNickname()).thenReturn(null);
-
-        assertThrows(UserNotIdentifiedException.class, () -> sutService.saveAndSendMessage("Hi!", userStub));
+    public void serviceShouldFormatMessageCorrectlyWhenGetsMessageAndNickname() {
+        assertEquals("Musk: Hello Mars!" + " ("
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")",
+                sutService.formatMessage("Musk", "Hello Mars!"));
     }
 
     @Test
-    public void serviceShouldThrowDuplicateNicknameExceptionWhenUserNicknameExists() {
-        Service sutService = new Service();
-        User userStub = mock(User.class);
+    public void shouldNotSetDuplicateNickname() {
+        when(controllerStub.isNicknameTaken("Musk")).thenReturn(true);
 
-        when(UsersController.isNicknameTaken("Musk")).thenReturn(true);
-
-        assertThrows(DuplicateNicknameException.class, () ->sutService.setUserNickname("Musk", userStub));
+        assertThrows(DuplicateNicknameException.class, () -> sutService.setUserNickname("Musk", userStub));
     }
 
     @Test
-    public void serviceShouldNotThrowUserNotIdentifiedExceptionWhenUserNicknameExist() throws UserNotIdentifiedException {
-        Service sutService = new Service();
-
-        User userStub = mock(User.class);
+    public void shouldIdentifyUserWithNickname() throws UserNotIdentifiedException {
         when(userStub.getNickname()).thenReturn("Musk");
 
         sutService.checkUserIdentified(userStub);
     }
 
     @Test
-    public void serviceShouldFormatMessageCorrectlyWhenMessageExists() throws UserNotIdentifiedException {
-        Service sutService = new Service();
-
-        User userStub = mock(User.class);
-        when(userStub.getNickname()).thenReturn("Musk");
-
-        sutService.checkUserIdentified(userStub);
+    public void serviceShouldNotPassNicknameWhenNicknameLengthIsTooLong() {
+        assertTrue(sutService.isNicknameTooLong("nicknameThatIsMoreThan20Chars"));
     }
 
+    @Test
+    public void serviceShouldPassNicknameWhenNicknameLengthIsLessThan20Chars() {
+        assertFalse(sutService.isNicknameTooLong("shortNick"));
+    }
+
+    @Test
+    public void serviceShouldNotPassRoomNameWhenRoomNameLengthIsTooLong() {
+        assertTrue(sutService.isRoomNameTooLong("roomNameThatIsMoreThan20Chars"));
+    }
+
+    @Test
+    public void serviceShouldPassRoomNameWhenRoomNameLengthIsLessThan20Chars() {
+        assertFalse(sutService.isRoomNameTooLong("shortRoomName"));
+    }
+
+    /* integration test
     @Test
     public void serviceShouldSetUserNicknameCorrectlyWhenNicknameExists() throws NicknameSettingException {
         Service sutService = new Service();
@@ -128,42 +147,16 @@ public class ServiceTest {
 
         assertEquals("Musk", user.getNickname());
     }
+    */
 
     @Test
-    public void serviceShouldGetFileNameCorrectlyWhenGetsDiscussionId() {
-        assertEquals("src/main/resources/room/228.txt", getFileName("228"));
+    public void shouldSetUserRoomIdAfterJoiningRoom() throws RoomNameTooLongException {
+        sutService.setUserRoom("first room", userStub);
+
+        verify(userStub).setRoomId(1);
     }
 
-    @Test
-    public void serviceShouldFormatMessageCorrectlyWhenGetsMessageAndNickname() {
-        Service sutService = new Service();
-
-        assertEquals("Musk: Hello Mars!" + " ("
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ")",
-                sutService.formatMessage("Musk", "Hello Mars!"));
-    }
-
-    @Test
-    public void serviceShouldSetUserRoomWhenRoomIdDoesNotExist() throws RoomNameTooLongException {
-        Service sutService = new Service();
-        User user = new User(10, "general");
-
-        sutService.setUserRoom("first room", user);
-
-        assertEquals(1, user.getRoomId());
-    }
-
-    @Test
-    public void serviceShouldResetUserRoomWhenRoomIdExists() throws RoomNameTooLongException {
-        Service sutService = new Service();
-        User user = new User(10, "general");
-
-        sutService.setUserRoom("first room", user);
-        sutService.setUserRoom("second room", user);
-
-        assertEquals(2, user.getRoomId());
-    }
-
+    /* integration test
     @Test
     public void serviceShouldSaveMessageWhenGetsMessageAndUser() throws IOException {
         Service sutService = new Service();
@@ -183,4 +176,5 @@ public class ServiceTest {
 
         assertEquals("Hi!", actualString);
     }
+    */
 }

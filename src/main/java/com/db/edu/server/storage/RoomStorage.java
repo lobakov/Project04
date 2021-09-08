@@ -6,22 +6,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoomStorage {
-    private static Map<String, Integer> namesToIds = new HashMap<>();
-    private static Map<Integer, Set<Integer>> idsToMembers = new HashMap<>();
-    private static AtomicInteger roomIds = new AtomicInteger(1);
-    private static String roomFolder = "src/main/resources/room/";
+    private Map<String, Integer> namesToIds;
+    private Map<Integer, Set<Integer>> idsToMembers;
+    private AtomicInteger roomIds;
+    private String roomFolder;
 
-    private RoomStorage() {
-        throw new IllegalStateException("Utility class");
+    public RoomStorage() {
+        namesToIds = new ConcurrentHashMap<>();
+        idsToMembers = new ConcurrentHashMap<>();
+        roomIds = new AtomicInteger(1);
+        roomFolder = "";
     }
 
     /**
      * Upload all the names of rooms from the rooms files directory to the map.
      */
-    public static void loadAllRooms(File folder) {
+    public void loadAllRooms(File folder) {
         for (final File file : Objects.requireNonNull(folder.listFiles())) {
             String roomName = file.getName();
             roomName = roomName.substring(0, roomName.length() - 4);
@@ -30,8 +34,8 @@ public class RoomStorage {
         }
     }
 
-    public static File getRoomFolder(String roomFolder) {
-        RoomStorage.roomFolder = roomFolder;
+    public File getRoomFolder(String roomFolder) {
+        this.roomFolder = roomFolder;
         Path path = Paths.get(roomFolder);
         if (!Files.exists(path)) {
             try {
@@ -43,37 +47,30 @@ public class RoomStorage {
         return new File(roomFolder);
     }
 
-    public static Set<Integer> getUsersByRoomId(int roomId) {
+    public Set<Integer> getUsersByRoomId(int roomId) {
         return idsToMembers.get(roomId);
     }
 
-    public static Integer addUserToRoom(int userId, String roomName) {
+    public Integer addUserToRoom(int userId, String roomName) {
         Integer roomId = namesToIds.computeIfAbsent(roomName, s -> roomIds.getAndIncrement());
         idsToMembers.putIfAbsent(roomId, new HashSet<>());
         idsToMembers.get(roomId).add(userId);
         return roomId;
     }
 
-    public static String getFileName(String roomName) {
+    public String getFileName(String roomName) {
         return roomFolder + roomName + ".txt";
     }
 
-    public static void removeUserFromRoom(int userId, int roomId) {
+    public void removeUserFromRoom(int userId, int roomId) {
         idsToMembers.get(roomId).remove(userId);
     }
 
-    public static Map<String, Integer> getNamesToIds() {
+    public Map<String, Integer> getNamesToIds() {
         return namesToIds;
     }
 
-    public static Map<Integer, Set<Integer>> getIdsToMembers() {
+    public Map<Integer, Set<Integer>> getIdsToMembers() {
         return idsToMembers;
-    }
-
-    public static void reset() {
-        namesToIds = new HashMap<>();
-        idsToMembers = new HashMap<>();
-        roomIds = new AtomicInteger(1);
-        roomFolder = "src/main/resources/room/";
     }
 }

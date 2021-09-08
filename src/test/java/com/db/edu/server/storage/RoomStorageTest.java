@@ -13,15 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RoomStorageTest {
     String roomPath = "src/test/resources/room/";
+    private RoomStorage rooms;
 
     @BeforeEach
     void setUp() {
-        reset();
-    }
-
-    @AfterEach
-    void tearDown() {
-        reset();
+        rooms = new RoomStorage();
     }
 
     @Test
@@ -30,10 +26,10 @@ class RoomStorageTest {
         Files.createFile(Paths.get(roomPath + "/room1.txt"));
         Files.createFile(Paths.get(roomPath + "/room2.txt"));
 
-        loadAllRooms(getRoomFolder("src/test/resources/room/"));
+        rooms.loadAllRooms(rooms.getRoomFolder("src/test/resources/room/"));
 
-        assertEquals(getNamesToIds().keySet(), new HashSet<>(Arrays.asList("room1", "room2")));
-        assertEquals(2, getIdsToMembers().size());
+        assertEquals(rooms.getNamesToIds().keySet(), new HashSet<>(Arrays.asList("room1", "room2")));
+        assertEquals(2, rooms.getIdsToMembers().size());
 
         Files.delete(Paths.get(roomPath + "/room1.txt"));
         Files.delete(Paths.get(roomPath + "/room2.txt"));
@@ -43,9 +39,14 @@ class RoomStorageTest {
     @Test
     void mapsMustGenerateWhenFolderDoesntExist() {
 
-        loadAllRooms(getRoomFolder("src/test/resources/room/"));
+        rooms.loadAllRooms(rooms.getRoomFolder("src/test/resources/room/"));
 
-        assertEquals(getNamesToIds().keySet(), new HashSet<>());
-        assertEquals(0, getIdsToMembers().size());
+        assertEquals(rooms.getNamesToIds().keySet(), new HashSet<>());
+        assertEquals(0, rooms.getIdsToMembers().size());
+    }
+
+    @Test
+    public void shouldGetFileNameCorrectlyWhenGetsDiscussionId() {
+        assertEquals("src/test/resources/room/228.txt", rooms.getFileName("228"));
     }
 }

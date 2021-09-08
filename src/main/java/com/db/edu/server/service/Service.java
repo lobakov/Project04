@@ -20,14 +20,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static com.db.edu.server.UsersController.isNicknameTaken;
-import static com.db.edu.server.UsersController.sendMessageToUser;
-import static com.db.edu.server.storage.RoomStorage.*;
-
 public class Service {
-
     private static final int MAX_NICKNAME_LENGTH = 20;
     private static final int MAX_ROOMNAME_LENGTH = 20;
+    private BufferStorage buffers;
+    private RoomStorage rooms;
+    private UsersController controller;
+
+    public Service(BufferStorage buffers, RoomStorage rooms, UsersController controller) {
+        this.buffers = buffers;
+        this.rooms = rooms;
+        this.controller = controller;
+    }
 
     /**
      * Saves a message from user to a room file and give it to other users.
@@ -42,9 +46,9 @@ public class Service {
         checkMessageLength(message);
         checkUserIdentified(user);
         String formattedMessage = formatMessage(user.getNickname(), message);
-        BufferedWriter writer = getWriter(getFileName(user.getRoomName()));
+        BufferedWriter writer = getWriter(rooms.getFileName(user.getRoomName()));
         saveMessage(writer, formattedMessage);
-        UsersController.sendMessageToAllUsers(formattedMessage, RoomStorage.getUsersByRoomId(user.getRoomId()));
+        controller.sendMessageToAllUsers(formattedMessage, rooms.getUsersByRoomId(user.getRoomId()));
     }
 
 
@@ -56,8 +60,8 @@ public class Service {
      */
     public void getMessagesFromRoom(User user) throws UserNotIdentifiedException, IOException {
         checkUserIdentified(user);
-        List<String> lines = Files.readAllLines(Paths.get(getFileName(user.getRoomName())));
-        UsersController.sendAllMessagesToUser(lines, user.getId());
+        List<String> lines = Files.readAllLines(Paths.get(rooms.getFileName(user.getRoomName())));
+        controller.sendAllMessagesToUser(lines, user.getId());
     }
 
     /**
@@ -67,7 +71,7 @@ public class Service {
      * @throws DuplicateNicknameException
      */
     public void setUserNickname(String nickname, User user) throws NicknameSettingException {
-        if (isNicknameTaken(nickname)) {
+        if (controller.isNicknameTaken(nickname)) {
             throw new DuplicateNicknameException("nickname is already taken!");
         }
         if (isNicknameTooLong(nickname)) {
@@ -75,7 +79,7 @@ public class Service {
                     String.format("nickname is too long, should be at most %d characters!", MAX_NICKNAME_LENGTH));
         }
         user.setNickname(nickname);
-        sendMessageToUser("Nickname successfully set!", user.getId());
+        controller.sendMessageToUser("Nickname successfully set!", user.getId());
     }
 
     /**
@@ -88,12 +92,17 @@ public class Service {
             throw new RoomNameTooLongException();
         }
         if (user.getRoomId() != 0) {
-            removeUserFromRoom(user.getId(), user.getRoomId());
+            rooms.removeUserFromRoom(user.getId(), user.getRoomId());
         }
-        Integer roomId = addUserToRoom(user.getId(), roomName);
+        Integer roomId = rooms.addUserToRoom(user.getId(), roomName);
         user.setRoomId(roomId);
         user.setRoomName(roomName);
-        sendMessageToUser("Joined #" + roomName + "!", user.getId());
+        controller.sendMessageToUser("Joined #" + roomName + "!", user.getId());
+    }
+
+    public void disconnectUser(User user) {
+        controller.disconnectUser(user.getId());
+        rooms.removeUserFromRoom(user.getId(), user.getRoomId());
     }
 
     void saveMessage(BufferedWriter writer, String formattedMessage) throws IOException {
@@ -108,7 +117,7 @@ public class Service {
     }
 
     BufferedWriter getWriter(String fileName) {
-        BufferedWriter writer = BufferStorage.getBufferedWriterByFileName(fileName);
+        BufferedWriter writer = buffers.getBufferedWriterByFileName(fileName);
         Path filePath = Paths.get(fileName);
         if (writer == null) {
             try {
@@ -120,7 +129,7 @@ public class Service {
                         new OutputStreamWriter(
                                 new BufferedOutputStream(
                                         new FileOutputStream(fileName, true)), StandardCharsets.UTF_8));
-                BufferStorage.save(fileName, writer);
+                buffers.save(fileName, writer);
             } catch (IOException e) {
                 e.printStackTrace(System.err);
             }

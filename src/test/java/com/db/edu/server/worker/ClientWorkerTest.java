@@ -10,7 +10,6 @@ import com.db.edu.exception.UserNotIdentifiedException;
 import com.db.edu.server.model.User;
 import com.db.edu.server.service.Service;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
