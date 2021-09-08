@@ -41,7 +41,7 @@ public class RoomStorage {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Can't create directory");
             }
         }
         return new File(roomFolder);

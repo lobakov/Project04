@@ -130,8 +130,10 @@ public class Service {
                                 new BufferedOutputStream(
                                         new FileOutputStream(fileName, true)), StandardCharsets.UTF_8));
                 buffers.save(fileName, writer);
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
+            } catch (FileNotFoundException e) {
+                System.err.println("Can't create directory or file");
+            } catch (IOException ioException) {
+                System.err.println("Can't get Writer for file " + fileName);
             }
         }
         return writer;
