@@ -4,23 +4,24 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BufferStorage {
-    static Map<String, BufferedWriter> writers = new HashMap<>();
+    private Map<String, BufferedWriter> writers;
 
-    private BufferStorage() {
-        throw new IllegalStateException("Utility class");
+    public BufferStorage() {
+        writers = new ConcurrentHashMap<>();
     }
 
-    public static BufferedWriter getBufferedWriterByFileName(String fileName) {
+    public BufferedWriter getBufferedWriterByFileName(String fileName) {
         return writers.get(fileName);
     }
 
-    public static void save(String fileName, BufferedWriter writer) {
+    public void save(String fileName, BufferedWriter writer) {
         writers.put(fileName, writer);
     }
 
-    public static void closeAllBuffers() {
+    public void closeAllBuffers() {
         for (BufferedWriter writer: writers.values()) {
             try {
                 writer.close();

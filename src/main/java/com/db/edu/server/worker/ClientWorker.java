@@ -81,14 +81,13 @@ public class ClientWorker extends Thread {
             out.close();
             in.close();
             socket.close();
-            RoomStorage.removeUserFromRoom(user.getId(), user.getRoomId());
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
     }
 
     private void disconnectUser() {
-        UsersController.disconnectUser(user.getId());
+        userService.disconnectUser(user);
     }
 
     private void sendGreeting() {
