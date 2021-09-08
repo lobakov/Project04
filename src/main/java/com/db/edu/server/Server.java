@@ -11,25 +11,23 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server extends Thread{
+    private AtomicInteger ids = new AtomicInteger();
+    private BufferStorage buffers = new BufferStorage();
+    private RoomStorage rooms = new RoomStorage();
+    private UsersController controller = new UsersController();
+    private Service userService = new Service(buffers, rooms, controller);
+
     @Override
     public void interrupt() {
-        UsersController.deleteAllUsers();
-        BufferStorage.closeAllBuffers();
+        controller.deleteAllUsers();
+        buffers.closeAllBuffers();
         super.interrupt();
     }
 
     @Override
     public void run() {
-        AtomicInteger ids = new AtomicInteger();
-        BufferStorage buffers = new BufferStorage();
-        RoomStorage rooms = new RoomStorage();
-        UsersController controller = new UsersController();
-        Service userService = new Service(buffers, rooms, controller);
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            controller.deleteAllUsers();
-//            buffers.closeAllBuffers();
-//        }));
         rooms.loadAllRooms(rooms.getRoomFolder("src/main/resources/room/"));
+
         try (final ServerSocket listener = new ServerSocket(10000)) {
             while (true) {
                 Socket userSocket = listener.accept();
