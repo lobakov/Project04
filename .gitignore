@@ -1,2 +1,5 @@
 /.idea/*
 /target/*
+*.sh
+build/*
+src/main/resources/*
