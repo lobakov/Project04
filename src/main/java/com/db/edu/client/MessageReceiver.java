@@ -21,7 +21,7 @@ class MessageReceiver extends Thread {
      */
     public void setStop() {
         stopped = true;
-        System.out.println("Reconnect please");
+        System.err.println("Reconnect please");
     }
 
     @Override
@@ -39,10 +39,10 @@ class MessageReceiver extends Thread {
                  final PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true)) {
                 out.println("Restart please");
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Can't get Writer from socket");
             }
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            System.err.println("Can't get Reader from socket");
         }
     }
 }

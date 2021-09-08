@@ -34,7 +34,7 @@ public class ClientWorker extends Thread {
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            System.err.println("Can't get Reader or Writer from socket");
         }
     }
 
@@ -80,7 +80,7 @@ public class ClientWorker extends Thread {
             in.close();
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            System.err.println("Can't stop worker correctly");
         }
     }
 

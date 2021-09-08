@@ -43,7 +43,7 @@ public class Client {
                     System.out.println(commandFromReceiver);
                     stop = true;
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    System.err.println("Can't read from the receiver");
                 }
 
             });

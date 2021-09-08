@@ -25,7 +25,7 @@ public class BufferStorage {
             try {
                 writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Can't close writer for BufferStorage");
             }
         }
     }
